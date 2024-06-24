@@ -131,13 +131,13 @@ const domMethods = {
   querySelector    : document.querySelector.bind(document),
   querySelectorAll : document.querySelectorAll.bind(document),
   createElement    : document.createElement.bind(document),
-  getElementById   : document.getElementById.bind(document),
 };
 
 const { querySelector, querySelectorAll, createElement, getElementById } = domMethods;
 
 function checkbox(type) {
-  const box = JSON.parse(localStorage.getItem("user-checkbox"));
+  let config = ReadConfig() || { setting: {} };
+  const box = config.setting['user-checkbox'];
   const value = box[type];
   return value;
 }
