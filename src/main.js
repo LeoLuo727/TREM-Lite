@@ -12,7 +12,7 @@ const test = (process.argv.includes("--raw")) ? 0 : 1;
 
 function createWindow() {
   win = new BrowserWindow({
-    title              : `TREM Lite v${app.getVersion()}`,
+    title          : `TREM Lite v${app.getVersion()}`,
     minHeight      : 540,
     minWidth       : 750,
     width          : 1280,
@@ -79,7 +79,7 @@ app.on("window-all-closed", (event) => {
 });
 
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  if (BrowserWindow.getAllWindows().length == 0) createWindow();
 });
 
 app.on("browser-window-created", (e, window) => {
@@ -87,7 +87,7 @@ app.on("browser-window-created", (e, window) => {
 });
 
 ipcMain.on("israw", () => {
-	win.webContents.send("israwok", test);
+  win.webContents.send("israwok", test);
 });
 
 ipcMain.on("openUrl", (_, url) => {

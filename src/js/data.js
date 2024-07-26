@@ -22,7 +22,6 @@ setInterval(() => {
   ntp();
 }, 60000);
 
-
 function read_replay_file() {
   if (!variable.replay_list.length) {
     variable.replay = 0;
@@ -34,7 +33,11 @@ function read_replay_file() {
 
   // eslint-disable-next-line no-constant-condition
   if (1 == 2) {
-    const data = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), `replay/${name}`)).toString());
+    const data = JSON.parse(
+      fs
+        .readFileSync(path.join(app.getPath("userData"), `replay/${name}`))
+        .toString(),
+    );
 
     const alert = Object.keys(data.rts.box).length;
     show_rts_dot(data.rts, alert);
@@ -47,14 +50,14 @@ function read_replay_file() {
       show_eew(eew);
     }
 
-    for (const intensity of data.intensity)
-      show_intensity(intensity);
+    for (const intensity of data.intensity) show_intensity(intensity);
 
     variable.replay = data.rts.time;
   }
 }
 
 async function realtime_rts() {
+  if (rts_replay_time > 0) return;
   const res = await fetchData(`${LB_url()}v1/trem/rts`);
   const data = await res.json();
   // console.log(data);
@@ -68,6 +71,7 @@ async function realtime_rts() {
 }
 
 async function realtime_eew() {
+  if (rts_replay_time > 0) return;
   const res = await fetchData(`${LB_url()}v1/eq/eew`);
   const data = await res.json();
   for (const eew of data) {
@@ -77,7 +81,55 @@ async function realtime_eew() {
 }
 
 async function ntp() {
-  const res = await fetchData(`https://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/ntp`);
+  const res = await fetchData(
+    `https://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/ntp`,
+  );
   const data = await res.text();
   variable.time_offset = Number(data) - Date.now();
 }
+
+let rts_replay_time = 0;
+
+setInterval(() => {
+  try {
+    if (!rts_replay_time)
+      return;
+
+    rts_replay_time += 1000;
+    const ts = Math.round(rts_replay_time / 1000) * 1000;
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 2500);
+    fetch(`https://api-2.exptech.dev/api/v1/trem/rts/${ts}`, { signal: controller.signal })
+      .then(async (ans) => {
+        ans = await ans.json();
+        variable.report.replay_data = ans;
+      })
+      .catch((err) => {
+        console.log("rts", err);
+      });
+
+    fetch(`https://api-2.exptech.dev/api/v1/eq/eew/${ts}`, { signal: controller.signal })
+      .then(async (ans_eew) => {
+        ans_eew = await ans_eew.json();
+        for (const eew of ans_eew)
+          variable.report.replay_data.eew = eew;
+      })
+      .catch((err) => {
+        console.log("eew", err);
+      });
+
+    if (!variable.report.replay_data.box) return;
+    const alert = Object.keys(variable.report.replay_data.box).length;
+    if (alert) show_rts_box(variable.report.replay_data.box);
+
+    if (variable.report.replay_data.eew) {
+      show_rts_dot(variable.report.replay_data, alert);
+      variable.report.replay_data.eew.timestamp = now();
+      show_eew(variable.report.replay_data.eew);
+    }
+
+    variable.replay = variable.report.replay_data.time;
+  } catch (err) {
+    console.log(err);
+  }
+}, 1_000);

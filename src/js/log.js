@@ -9,12 +9,13 @@ const file = new winston.transports.DailyRotateFile({
 
 const logger = winston.createLogger({
   level  : "info",
-  format : winston.format.printf(info => {
+  format : winston.format.printf((info) => {
     const date = new Date();
-    return `[${formatTwoDigits(date.getHours())}:${formatTwoDigits(date.getMinutes())}:${formatTwoDigits(date.getSeconds())}][${info.level.toUpperCase()}]: ${info.message}`;
+    return `[${formatTwoDigits(date.getHours())}:${formatTwoDigits(
+      date.getMinutes(),
+    )}:${formatTwoDigits(date.getSeconds())}][${info.level.toUpperCase()}]: ${
+      info.message
+    }`;
   }),
-  transports: [
-    new winston.transports.Console(),
-    file,
-  ],
+  transports: [new winston.transports.Console(), file],
 });

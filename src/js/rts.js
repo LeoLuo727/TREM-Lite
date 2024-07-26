@@ -155,6 +155,12 @@ function show_rts_dot(data, alert) {
       });
 
     const pga = data.station[id].pga;
+    const config = ReadConfig() || { setting: {} };
+    if (data.station[config.setting["station"].name]) {
+      $("#station-max-pga").textContent = `${data.station[config.setting["station"].name].pga} gal`;
+      $("#station-max-pga").className = `intensity-${alert ? intensity_float_to_int(data.station[config.setting["station"].name].i) : 0}`;
+    }
+
 
     const info = variable.station_info[id].info.at(-1);
     if (data.station[id].alert) {
@@ -267,7 +273,9 @@ function show_rts_dot(data, alert) {
           .addTo(variable.map);
   }
 
-  max_pga_text.textContent = `${(max_pga > 999) ? "999+" : max_pga.toFixed(2)} gal`;
+  max_pga_text.textContent = `${
+    max_pga > 999 ? "999+" : max_pga.toFixed(2)
+  } gal`;
   max_pga_text.className = `intensity-${alert ? max_shindo : 0}`;
   $("#trigger").textContent = trigger;
   $("#level").textContent = Math.round(level);

@@ -22,7 +22,7 @@ function ReadConfig() {
 }
 
 function WriteConfig(data) {
-  let yamlStr = yaml.dump(data);
+  const yamlStr = yaml.dump(data);
   fs.writeFileSync("config.yaml", yamlStr, "utf8");
 }
 
@@ -31,7 +31,7 @@ function config_init() {
 
   if (!config) {
     config = {
-      setting: {}
+      setting: {},
     };
     WriteConfig(config);
   } else if (!config.setting) {

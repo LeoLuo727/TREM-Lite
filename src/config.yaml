@@ -1,9 +1,9 @@
 setting:
   location:
-    city: 臺南市
-    town: 歸仁區
-    lat: 22.967286
-    lon: 120.2940045
+    city: 屏東縣
+    town: 屏東市
+    lat: 22.662498
+    lon: 120.4914295
   warning:
     realtime-station: 0級
     estimate-int: 0級
@@ -11,12 +11,12 @@ setting:
   bg-percentage: 100
   map-display-effect: 1
   station:
-    name: '6732340'
+    name: '15007248'
     net: SE-Net
-    loc: 臺南市歸仁區
-    code: 711
-    lat: 22.980406
-    lon: 120.292724
+    loc: 屏東縣九如鄉
+    code: 904
+    lat: 22.748288
+    lon: 120.4815409
   user-checkbox:
     early-warning-CWA: 1
     early-warning-JMA: 1
@@ -42,5 +42,5 @@ setting:
     sound-effects-Shindo2: 1
     sound-effects-Update: 1
     sound-effects-dong: 1
+  login: ''
   tos: 1
-  login: f717c836c48b114

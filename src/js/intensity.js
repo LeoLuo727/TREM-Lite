@@ -32,7 +32,10 @@
 // });
 
 function show_intensity(data) {
-  if (!variable.intensity_list[data.id] || variable.intensity_list[data.id].data.serial < data.serial) {
+  if (
+    !variable.intensity_list[data.id] ||
+    variable.intensity_list[data.id].data.serial < data.serial
+  ) {
     constant.AUDIO.INTENSITY.play();
     if (!variable.intensity_list[data.id])
       variable.intensity_list[data.id] = {
@@ -52,7 +55,8 @@ function show_intensity(data) {
         if (loc) {
           area_intensity_list[`${loc.city} ${loc.town}`] = int;
           variable.focus.bounds.intensity.extend([loc.lat, loc.lon]);
-          if (int == data.max && !max_city_list.includes(loc.city)) max_city_list.push(loc.city);
+          if (int == data.max && !max_city_list.includes(loc.city))
+            max_city_list.push(loc.city);
         }
       }
     variable.focus.status.intensity = Date.now();
@@ -60,32 +64,41 @@ function show_intensity(data) {
 
     if (variable.speech_status) {
       const loc_str = max_city_list.join("、");
-      if (variable.intensity_list[data.id].speech.max < data.max || variable.intensity_list[data.id].speech.loc != loc_str) {
+      if (
+        variable.intensity_list[data.id].speech.max < data.max ||
+        variable.intensity_list[data.id].speech.loc != loc_str
+      ) {
         variable.intensity_list[data.id].speech.max = data.max;
         variable.intensity_list[data.id].speech.loc = loc_str;
         if (speech.speaking()) speech.cancel();
-        speech.speak({ text: `震度速報，最大震度${intensity_list[data.max].replace("⁺", "強").replace("⁻", "弱")}，${loc_str}` });
+        speech.speak({
+          text: `震度速報，最大震度${intensity_list[data.max]
+            .replace("⁺", "強")
+            .replace("⁻", "弱")}，${loc_str}`,
+        });
       }
     }
 
     if (variable.intensity_geojson) variable.intensity_geojson.remove();
-    variable.intensity_geojson = L.geoJson.vt(require(path.join(__dirname, "../resource/map", "town.json")), {
-      minZoom : 4,
-      maxZoom : 12,
-      buffer  : 256,
-      zIndex  : 5,
-      style   : (args) => {
-        const name = args.COUNTYNAME + " " + args.TOWNNAME;
-        const intensity = area_intensity_list[name];
-        const color = (!intensity) ? "#3F4045" : int_to_color(intensity);
-        return {
-          color       : "transparent",
-          weight      : 0,
-          fillColor   : color,
-          fillOpacity : 1,
-        };
-      },
-    }).addTo(variable.map);
+    variable.intensity_geojson = L.geoJson
+      .vt(require(path.join(__dirname, "../resource/map", "town.json")), {
+        minZoom : 4,
+        maxZoom : 12,
+        buffer  : 256,
+        zIndex  : 5,
+        style   : (args) => {
+          const name = args.COUNTYNAME + " " + args.TOWNNAME;
+          const intensity = area_intensity_list[name];
+          const color = !intensity ? "#3F4045" : int_to_color(intensity);
+          return {
+            color       : "transparent",
+            weight      : 0,
+            fillColor   : color,
+            fillOpacity : 1,
+          };
+        },
+      })
+      .addTo(variable.map);
     variable.last_map_hash = "";
   }
 }

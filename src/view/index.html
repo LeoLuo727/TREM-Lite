@@ -18,16 +18,14 @@
             <div class="tos_title">TOS 服務條款</div>
             <div class="tos_exptech">© ExpTech Studio</div>
             <div class="tos_body">
-                <li>透過服務使用，使用者被視為已同意遵守服務條款。</li>
-                <li>嚴禁未經授權的再分發行為。</li>
-                <li>嚴禁轉售TREM提供的資訊。</li>
-                <li>禁止違反法律法規，以及違反公共秩序和道德準則的行為。</li>
-                <li>除上述條款外，任何開發團隊認為不適當的行為均不被允許。</li>
-                <li>TREM使用P2P技術傳遞資訊。</li>
-                <li>所有資訊以中央氣象署(CWA)發布的內容為準。</li>
+                <li>透過使用本服務，您將被視為已同意遵守服務條款。</li>
+                <li>嚴禁未經授權將本服務之所有資料及畫面進行轉售或以不當之名義進行再分發。</li>
+                <li>本服務會員功能僅限於本人使用，不得將會員帳號移轉於第三方。</li>
+                <li>禁止違反中華民國法規，包括但不限於氣象法、社維法、刑法及一切網際網路規定。</li>
+                <li>嚴禁使用本服務侵犯第三者之權益，包括但不限於著作權、商標權、專利權等。</li>
+                <li>嚴禁任何形式損害探索科技伺服器及工作人員或其他使用者使用本服務的權利。</li>
+                <li>本服務發佈之所有資訊，最終以中央氣象署(CWA)發佈內容為準。</li>
             </div>
-
-
             <div class="tos_sure">我已詳細閱讀 並同意上述條款</div>
         </div>
     </div>
@@ -38,18 +36,16 @@
                 <span class="nav-item-icon material-symbols-rounded">home</span>
                 <span class="nav-item-label">首頁畫面</span>
         </div>
-        <!--
-        <div class="nav-item">
+        <!-- <div class="nav-item">
             <button id="nav-report-panel" class="nav-btn" type="button" data-panel="report">
                 <span class="nav-item-icon material-symbols-rounded">earthquake</span>
                 <span class="nav-item-label">地震報告</span>
-        </div>
-        <div class="nav-item">
+        </div> -->
+        <!-- <div class="nav-item">
             <button id="nav-tsunami-panel" class="nav-btn" type="button" data-panel="tsunami">
                 <span class="nav-item-icon material-symbols-rounded">tsunami</span>
                 <span class="nav-item-label">海嘯資訊</span>
-        </div>
-        -->
+        </div> -->
         <div class="below-nav">
             <div class="nav-item">
                 <button id="nav-settings-panel" class="nav-btn" type="button" data-panel="settings">
@@ -154,8 +150,12 @@
     </div>
 
     <div class="max-pga">
-        <div>最大加速度</div>
+        <div>最大測站</div>
         <div id="max-pga" class="intensity-0" style="border-radius: 5px;padding: 2px;">0.00 gal</div>
+    </div>
+    <div class="station-max-pga">
+        <div>目前測站</div>
+        <div id="station-max-pga" class="intensity-0" style="border-radius: 5px;padding: 2px;">0.00 gal</div>
     </div>
     <div class="rts-info-box">
         <div class="rts-info-body">
@@ -410,10 +410,10 @@
                         <span class="chip-leading-icon material-symbols-rounded">captive_portal</span>
                         <span class="chip-label">報告頁面</span>
                     </button>
-                    <button id="report-action-copy" class="report-action-chip chip">
+                    <!-- <button id="report-action-copy" class="report-action-chip chip">
                         <span class="chip-leading-icon material-symbols-rounded">content_copy</span>
                         <span class="chip-label">複製</span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
             <div class="report-box-body">

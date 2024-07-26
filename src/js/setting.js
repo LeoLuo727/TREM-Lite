@@ -29,9 +29,8 @@ version.textContent = app.getVersion();
 system_os.textContent = `${os.version()} (${os.release()})`;
 system_cpu.textContent = `${os.cpus()[0].model}`;
 
-
 async function ls_init() {
-  let config = ReadConfig() || { setting: {} };
+  const config = ReadConfig() || { setting: {} };
 
   await realtimeStation();
   Object.entries(constant.SETTING.LOCALSTORAGE_DEF).forEach(([key, value]) => {
@@ -43,22 +42,19 @@ async function ls_init() {
   const def_loc = constant.SETTING.LOCALSTORAGE_DEF["location"];
   const def_loc_info = constant.REGION[def_loc.city][def_loc.town];
 
-  if (!config.setting['station']) {
-    config.setting['station'] = NearStation(def_loc_info.lat, def_loc_info.lon);
+  if (!config.setting["station"]) {
+    config.setting["station"] = NearStation(def_loc_info.lat, def_loc_info.lon);
     WriteConfig(config);
   }
 
-  const userCheckbox = config.setting['user-checkbox'] || {};
+  const userCheckbox = config.setting["user-checkbox"] || {};
 
-  Object.keys(constant.SETTING.CHECKBOX_DEF).forEach(key => {
-    if (!(key in userCheckbox)) {
-      userCheckbox[key] = 1;
-    }
+  Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key) => {
+    if (!(key in userCheckbox)) userCheckbox[key] = 1;
   });
 
-  config.setting['user-checkbox'] = userCheckbox;
+  config.setting["user-checkbox"] = userCheckbox;
   WriteConfig(config);
-
 }
 ls_init();
 
@@ -66,12 +62,12 @@ ls_init();
 querySelectorAll(".setting-buttons .button").forEach((button) => {
   button.addEventListener("click", () => {
     querySelectorAll(".setting-options-page").forEach((page) =>
-      page.classList.remove("active")
+      page.classList.remove("active"),
     );
     querySelector(`.${button.getAttribute("for")}`).classList.add("active");
 
     querySelectorAll(".setting-buttons .button").forEach((btn) =>
-      btn.classList.remove("on")
+      btn.classList.remove("on"),
     );
     button.classList.add("on");
   });
@@ -119,7 +115,7 @@ Back.addEventListener("click", () => {
 });
 
 // 所在地-下拉選單點擊事件
-Location.addEventListener("click", function () {
+Location.addEventListener("click", function() {
   const ArrowSpan = this.querySelector(".selected-btn");
   ArrowSpan.textContent =
     ArrowSpan.textContent.trim() == "keyboard_arrow_up"
@@ -132,12 +128,12 @@ Location.addEventListener("click", function () {
 const addLocationSelectEvent = (
   localItemsContainer,
   cityItemsContainer,
-  selectElement
+  selectElement,
 ) => {
   [localItemsContainer, cityItemsContainer].forEach((container) => {
     container.addEventListener("click", (event) => {
       const closestDiv = event.target.closest(
-        ".usr-location .select-items > div"
+        ".usr-location .select-items > div",
       );
       if (closestDiv) {
         const selectedOption = closestDiv.textContent;
@@ -167,7 +163,7 @@ localItems.addEventListener("click", (event) => {
   if (closestDiv) {
     updateLocationSelectItems(
       CityItems,
-      constant.SETTING.LOCAL_ARRAY[closestDiv.textContent]
+      constant.SETTING.LOCAL_ARRAY[closestDiv.textContent],
     );
     updateLocationSelectItems(TownItems, []);
   }
@@ -180,7 +176,7 @@ CityItems.addEventListener("click", (event) => {
     CitySel.textContent = closestDiv.textContent;
     updateLocationSelectItems(
       TownItems,
-      constant.SETTING.SPECIAL_LOCAL[closestDiv.textContent] || []
+      constant.SETTING.SPECIAL_LOCAL[closestDiv.textContent] || [],
     );
   }
 });
@@ -202,22 +198,23 @@ TownItems.addEventListener("click", (event) => {
         constant.REGION[CitySel.textContent][closestDiv.textContent];
       usrLocalStation = NearStation(
         usr_location_info.lat,
-        usr_location_info.lon
+        usr_location_info.lon,
       );
     } else
       usrLocalStation = findStationByLocation(
         CitySel.textContent,
-        closestDiv.textContent
+        closestDiv.textContent,
       );
 
     querySelector(
-      ".current-station"
+      ".current-station",
     ).textContent = `${usrLocalStation.net} ${usrLocalStation.code}-${usrLocalStation.name} ${usrLocalStation.loc}`;
     SaveSelectedLocationToStorage(
       CitySel.textContent,
       closestDiv.textContent,
-      JSON.stringify(usrLocalStation)
+      JSON.stringify(usrLocalStation),
     );
+    usr_location();
   }
 });
 
@@ -234,7 +231,7 @@ function NearStation(la, lo) {
 
   for (const station of variable.setting.station) {
     const dist_surface = Math.sqrt(
-      (la - station.lat) ** 2 * 111 ** 2 + (lo - station.lon) ** 2 * 101 ** 2
+      (la - station.lat) ** 2 * 111 ** 2 + (lo - station.lon) ** 2 * 101 ** 2,
     );
     if (dist_surface < min) {
       min = dist_surface;
@@ -256,13 +253,13 @@ const SaveSelectedLocationToStorage = (city, town, station) => {
     const locationData = {
       city,
       town,
-      lat: coordinate.lat,
-      lon: coordinate.lon,
+      lat : coordinate.lat,
+      lon : coordinate.lon,
     };
 
-    let config = ReadConfig() || { setting: {} };
-    config.setting['location'] = locationData;
-    config.setting['station'] = JSON.parse(station);
+    const config = ReadConfig() || { setting: {} };
+    config.setting["location"] = locationData;
+    config.setting["station"] = JSON.parse(station);
     WriteConfig(config);
   }
 };
@@ -301,12 +298,12 @@ function processStationData(data) {
       constant.SETTING.STATION_REGION.push(loc.city);
 
     variable.setting.station.push({
-      name: station,
-      net: data[station].net,
-      loc: loc.city ? `${loc.city}${loc.town}` : loc,
-      code: info.code,
-      lat: info.lat,
-      lon: info.lon,
+      name : station,
+      net  : data[station].net,
+      loc  : loc.city ? `${loc.city}${loc.town}` : loc,
+      code : info.code,
+      lat  : info.lat,
+      lon  : info.lon,
     });
   });
 }
@@ -322,7 +319,7 @@ function RenderStationReg() {
 
   const uniqueRegions = [
     ...new Set(
-      constant.SETTING.STATION_REGION.map((city) => city.slice(0, -1))
+      constant.SETTING.STATION_REGION.map((city) => city.slice(0, -1)),
     ),
   ];
 
@@ -341,13 +338,13 @@ function handleCityItemClick(event) {
   const target = event.target.closest(".realtime-station .select-items > div");
   if (target) {
     StationLocalItems.querySelectorAll("div").forEach((div) =>
-      div.classList.remove("select-option-selected")
+      div.classList.remove("select-option-selected"),
     );
     target.classList.add("select-option-selected");
 
     const selectedCity = target.textContent;
     const filteredStations = variable.setting.station.filter((station) =>
-      station.loc.includes(selectedCity)
+      station.loc.includes(selectedCity),
     );
     renderFilteredStations(filteredStations);
   }
@@ -361,12 +358,12 @@ function renderFilteredStations(stations) {
 
   stations.forEach((station) => {
     const stationAttr = {
-      "data-net": station.net,
-      "data-code": station.code,
-      "data-name": station.name,
-      "data-loc": station.loc,
-      "data-lat": station.lat,
-      "data-lon": station.lon,
+      "data-net"  : station.net,
+      "data-code" : station.code,
+      "data-name" : station.name,
+      "data-loc"  : station.loc,
+      "data-lat"  : station.lat,
+      "data-lon"  : station.lon,
     };
     const stationDiv = CreatEle("", "", "", "", stationAttr);
 
@@ -401,7 +398,7 @@ StationSelEvent(StationItems);
 function StationSelEvent(itemsContainer) {
   itemsContainer.addEventListener("click", (event) => {
     const closestDiv = event.target.closest(
-      ".realtime-station .select-items > div"
+      ".realtime-station .select-items > div",
     );
     if (closestDiv) {
       itemsContainer
@@ -413,17 +410,17 @@ function StationSelEvent(itemsContainer) {
       if (match) {
         StationSel.textContent = `${match[1]} ${match[2]}`;
         querySelector(
-          ".current-station"
+          ".current-station",
         ).textContent = `${match[1]} ${match[2]}`;
         const stationData = Object.fromEntries(
           ["net", "code", "name", "loc", "lat", "lon"].map((attr) => [
             attr,
             closestDiv.getAttribute(`data-${attr}`),
-          ])
+          ]),
         );
 
-        let config = ReadConfig() || { setting: {} };
-        config.setting['station'] = stationData;
+        const config = ReadConfig() || { setting: {} };
+        config.setting["station"] = stationData;
         WriteConfig(config);
       }
     }
@@ -441,7 +438,7 @@ const FormLogin = $("#form-login");
 const FormEmail = $("#email");
 const FormPassword = $("#password");
 const LoginMsg = $(".login_msg");
-const url = "https://api.exptech.com.tw/api/v3/et/";
+const url = "https://api-1.exptech.com.tw/api/v3/et/";
 
 // 登入-切換登入表單和帳號資訊
 function toggleForms(isLogin) {
@@ -476,8 +473,8 @@ FormLogin.addEventListener("click", async () => {
 
 // 登入-表單登出按鈕
 LogoutBtn.addEventListener("click", async () => {
-  let config = ReadConfig() || { setting: {} };
-  const token = config.setting['user-key'];
+  const config = ReadConfig() || { setting: {} };
+  const token = config.setting["user-key"];
   await logout(token);
 });
 
@@ -511,12 +508,13 @@ async function handleUserAction(endpoint, options) {
     LoginMsg.classList.add(isSuccess ? "success" : "error");
 
     if (isSuccess) {
-      LoginMsg.textContent = `${options.method == "POST" ? "登入" : "登出"
-        }成功！`;
+      LoginMsg.textContent = `${
+        options.method == "POST" ? "登入" : "登出"
+      }成功！`;
 
-      let config = ReadConfig() || { setting: {} };
-      let data = { login: responseData };
-      config.setting.login = data.login === "OK" ? "" : data.login || "";
+      const config = ReadConfig() || { setting: {} };
+      const data = { login: responseData };
+      config.setting.login = data.login == "OK" ? "" : data.login || "";
       WriteConfig(config);
 
       if (endpoint == "login") LoginSuccess(await getUserInfo(responseData));
@@ -534,7 +532,7 @@ async function handleUserAction(endpoint, options) {
       () => {
         LoginMsg.classList.remove("shake");
       },
-      { once: true }
+      { once: true },
     );
   } catch (error) {
     console.error("Error:", error);
@@ -543,16 +541,16 @@ async function handleUserAction(endpoint, options) {
 
 // 登入-表單登入
 async function login(email, password) {
-  const version = app.getVersion().split("-")[1];
+  const ver = app.getVersion().split("-")[1];
   const requestBody = {
     email,
-    pass: password,
-    name: `/TREM-Lite/${version}/${os.release()}`,
+    pass : password,
+    name : `/TREM-Lite/${ver}/${os.release()}`,
   };
   const options = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
+    method  : "POST",
+    headers : { "Content-Type": "application/json" },
+    body    : JSON.stringify(requestBody),
   };
   await handleUserAction("login", options);
 }
@@ -560,10 +558,10 @@ async function login(email, password) {
 // 登入-表單登出
 async function logout(token) {
   const options = {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic ${token}`,
+    method  : "DELETE",
+    headers : {
+      "Content-Type" : "application/json",
+      Authorization  : `Basic ${token}`,
     },
   };
   await handleUserAction("logout", options);
@@ -573,17 +571,14 @@ async function logout(token) {
 async function getUserInfo(token, retryCount = 0) {
   try {
     const response = await fetch(`${url}info`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${token}`,
+      method  : "GET",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization  : `Basic ${token}`,
       },
     });
-    if (response.ok) {
-      return await response.json();
-    } else {
-      throw new Error(`伺服器異常(error ${response.status})`);
-    }
+    if (response.ok) return await response.json();
+    else throw new Error(`伺服器異常(error ${response.status})`);
   } catch (error) {
     if (retryCount < variable.report.list_retry) {
       logger.error(`[Fetch] ${error} (Try #${retryCount})`);
@@ -594,9 +589,9 @@ async function getUserInfo(token, retryCount = 0) {
 }
 
 const clickEvent = new MouseEvent("click", {
-  bubbles: 1,
-  cancelable: 1,
-  view: window,
+  bubbles    : 1,
+  cancelable : 1,
+  view       : window,
 });
 
 // 預警條件
@@ -627,14 +622,18 @@ function initializeSel(type, location, showInt, selectWrapper, items) {
 }
 
 function updateLocalStorage(typeClassName, selectedValue) {
-  let config = ReadConfig() || { setting: {} };
-  const data = config.setting['warning'] || {};
+  const config = ReadConfig() || { setting: {} };
+  const data = config.setting["warning"] || {};
   const key = typeClassName.includes("warning-realtime-station")
     ? "realtime-station"
     : "estimate-int";
   data[key] = selectedValue;
 
-  if (typeof config.setting.warning !== 'object' || config.setting.warning === null) config.setting.warning = {};
+  if (
+    typeof config.setting.warning !== "object" ||
+    config.setting.warning == null
+  )
+    config.setting.warning = {};
   config.setting.warning[key] = selectedValue;
   WriteConfig(config);
 }
@@ -691,45 +690,42 @@ addEventListener("mousemove", (event) => {
     sliderTrack.style.width = `${percentage}%`;
     SettingWrapper.style.backdropFilter = `blur(${blurValue}px)`;
 
-    let config = ReadConfig() || { setting: {} };
-    config.setting['bg-percentage'] = percentage;
-    config.setting['bg-filter'] = blurValue;
+    const config = ReadConfig() || { setting: {} };
+    config.setting["bg-percentage"] = percentage;
+    config.setting["bg-filter"] = blurValue;
     WriteConfig(config);
   }
 });
 
 // 從storage取得user之前保存的選項
 const GetSelectedFromStorage = () => {
-  let config = ReadConfig() || { setting: {} };
+  const config = ReadConfig() || { setting: {} };
 
-  const locationData = config.setting['location'] || {};
-  const warningData = config.setting['warning'] || {};
-  sliderThumb.style.left = `${config.setting['bg-percentage']
-    ? config.setting['bg-percentage']
-    : 100
-    }%`;
-  sliderTrack.style.width = `${config.setting['bg-percentage']
-    ? config.setting['bg-percentage']
-    : 100
-    }%`;
-  SettingWrapper.style.backdropFilter = `blur(${config.setting['bg-filter'] ? config.setting['bg-filter'] : 20
-    }px)`;
+  const locationData = config.setting["location"] || {};
+  const warningData = config.setting["warning"] || {};
+  sliderThumb.style.left = `${
+    config.setting["bg-percentage"] ? config.setting["bg-percentage"] : 100
+  }%`;
+  sliderTrack.style.width = `${
+    config.setting["bg-percentage"] ? config.setting["bg-percentage"] : 100
+  }%`;
+  SettingWrapper.style.backdropFilter = `blur(${
+    config.setting["bg-filter"] ? config.setting["bg-filter"] : 20
+  }px)`;
   return {
-    city: locationData.city ? locationData.city : "臺南市",
-    town: locationData.town ? locationData.town : "歸仁區",
-    station: config.setting['station']
-      ? config.setting['station']
-      : "未知區域",
-    wrts: warningData["realtime-station"]
+    city    : locationData.city ? locationData.city : "臺南市",
+    town    : locationData.town ? locationData.town : "歸仁區",
+    station : config.setting["station"] ? config.setting["station"] : "未知區域",
+    wrts    : warningData["realtime-station"]
       ? warningData["realtime-station"]
       : constant.SETTING.INTENSITY[0],
     wei: warningData["estimate-int"]
       ? warningData["estimate-int"]
       : constant.SETTING.INTENSITY[0],
-    effect: config.setting['map-display-effect']
-      ? config.setting['map-display-effect']
+    effect: config.setting["map-display-effect"]
+      ? config.setting["map-display-effect"]
       : "1",
-    selectedcheckbox: config.setting['user-checkbox'],
+    selectedcheckbox: config.setting["user-checkbox"],
   };
 };
 
@@ -738,7 +734,7 @@ const RenderSelectedFromStorage = () => {
   const { city, town, station, wrts, wei, effect, selectedcheckbox } =
     GetSelectedFromStorage();
   const current_station = $(".current-station");
-  let config = ReadConfig() || { setting: {} };
+  const config = ReadConfig() || { setting: {} };
 
   querySelector(".current-city").textContent = city;
   querySelector(".current-town").textContent = town;
@@ -746,8 +742,9 @@ const RenderSelectedFromStorage = () => {
   querySelector(".estimate-int").textContent = wei;
 
   if (station && station !== "null") {
-    const stationData = config.setting['station'];
-    if (stationData) current_station.textContent = `${stationData.net} ${stationData.code}-${stationData.name} ${stationData.loc}`;
+    const stationData = config.setting["station"];
+    if (stationData)
+      current_station.textContent = `${stationData.net} ${stationData.code}-${stationData.name} ${stationData.loc}`;
   } else current_station.textContent = "未知區域";
 
   const keys = Object.keys(constant.SETTING.MAP_DISPLAY);
@@ -782,7 +779,7 @@ if (MapDisplayEffItems)
 const addMapDisplayEffSelEvent = (container, selectElement) => {
   container.addEventListener("click", (event) => {
     const closestDiv = event.target.closest(
-      ".usr-location .select-items > div"
+      ".usr-location .select-items > div",
     );
     if (closestDiv) {
       selectElement.textContent = closestDiv.textContent;
@@ -794,7 +791,7 @@ const addMapDisplayEffSelEvent = (container, selectElement) => {
   });
 };
 
-MapDisplayEffLocation.addEventListener("click", function () {
+MapDisplayEffLocation.addEventListener("click", function() {
   const ArrowSpan = this.querySelector(".selected-btn");
   ArrowSpan.textContent =
     ArrowSpan.textContent.trim() == "keyboard_arrow_up"
@@ -805,17 +802,17 @@ MapDisplayEffLocation.addEventListener("click", function () {
 
 MapDisplayEffItems.addEventListener("click", (event) => {
   const closestDiv = event.target.closest(
-    ".map-display-effect .select-items > div"
+    ".map-display-effect .select-items > div",
   );
   if (closestDiv) {
     MapDisplayEffSel.textContent = closestDiv.textContent;
     MapDisplayEffSelWrapper.querySelectorAll("div").forEach((div) =>
-      div.classList.remove("select-option-selected")
+      div.classList.remove("select-option-selected"),
     );
     closestDiv.classList.toggle("select-option-selected");
 
-    let config = ReadConfig() || { setting: {} };
-    config.setting['map-display-effect'] = closestDiv.dataset.value;
+    const config = ReadConfig() || { setting: {} };
+    config.setting["map-display-effect"] = closestDiv.dataset.value;
     WriteConfig(config);
   }
 });
@@ -825,7 +822,7 @@ addMapDisplayEffSelEvent(MapDisplayEffItems, MapDisplayEffSel);
 const Tos = $(".tos");
 const Tos_Sure = $(".tos_sure");
 
-if (!ReadConfig().setting['tos']) {
+if (!ReadConfig().setting["tos"]) {
   display([Tos], "flex");
   setTimeout(() => {
     const tosWrapper = $(".tos_wrapper");
@@ -839,8 +836,8 @@ Tos_Sure.addEventListener("click", () => {
   setTimeout(() => {
     display([Tos]);
 
-    let config = ReadConfig() || { setting: {} };
-    config.setting['tos'] = 1;
+    const config = ReadConfig() || { setting: {} };
+    config.setting["tos"] = 1;
     WriteConfig(config);
   }, 2000);
 });
@@ -853,13 +850,13 @@ const updateCheckboxesLocalStorage = () => {
     return acc;
   }, {});
 
-  let config = ReadConfig() || { setting: {} };
-  config.setting['user-checkbox'] = selectedCheckbox;
+  const config = ReadConfig() || { setting: {} };
+  config.setting["user-checkbox"] = selectedCheckbox;
   WriteConfig(config);
 };
 
 checkboxes.forEach((checkbox) =>
-  checkbox.addEventListener("change", updateCheckboxesLocalStorage)
+  checkbox.addEventListener("change", updateCheckboxesLocalStorage),
 );
 
 /** 檢查新版本**/
@@ -868,19 +865,16 @@ const app_version = app.getVersion();
 async function checkForNewRelease() {
   try {
     const response = await fetch(
-      "https://api.github.com/repos/ExpTechTW/TREM-Lite/releases"
+      "https://api.github.com/repos/ExpTechTW/TREM-Lite/releases",
     );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+    if (!response.ok) throw new Error("Network response was not ok");
+
     const releases = await response.json();
     if (releases.length > 0) {
       const latestRelease = releases[0];
       const latestVersion = latestRelease.tag_name;
-
       const comparisonResult = compareVersions(latestVersion, app_version);
-
-      if (comparisonResult === 1) {
+      if (comparisonResult == 1) {
         NewVersion.style.color = "#fff900";
         AppVersion.classList.toggle("new");
       }
@@ -892,27 +886,21 @@ async function checkForNewRelease() {
 
 function compareVersions(last, current) {
   let lst = last.replace("v", "");
-
   NewVersion.textContent = lst;
   CurrentVersion.textContent = current;
 
-  if (last.includes('-')) lst = lst.split('-')[0];
+  if (last.includes("-")) lst = lst.split("-")[0];
   const curr = current.split("-")[0];
   const parts1 = lst.split(".").map(Number);
   const parts2 = curr.split(".").map(Number);
-
   const length = Math.max(parts1.length, parts2.length);
   for (let i = 0; i < length; i++) {
-    AppVersion.style.display = 'flex';
+    AppVersion.style.display = "flex";
     const part1 = parts1[i] || 0;
     const part2 = parts2[i] || 0;
-    if (part1 > part2) {
-      return 1;
-    } else if (part1 < part2) {
-      return -1;
-    } else {
-      AppVersion.style.display = 'none';
-    }
+    if (part1 > part2) return 1;
+    else if (part1 < part2) return -1;
+    else AppVersion.style.display = "none";
   }
   return 0;
 }

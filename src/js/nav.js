@@ -48,7 +48,7 @@ Home_btn.addEventListener("click", (event) => {
 // });
 
 function removeOnClass(element) {
-  Nav_btns.forEach(btn => btn.classList.remove("on"));
+  Nav_btns.forEach((btn) => btn.classList.remove("on"));
   element.classList.add("on");
 }
 
@@ -56,7 +56,13 @@ function toHome(element) {
   if (element) removeOnClass(element);
   if (Object.keys(variable.eew_list).length) display([RTS_List], "flex");
   display([ReportListWrapper, InfoBox], "flex");
-  display([Warning_msg, TsunamiReport, TsunamiInfoBox, SettingWrapper, ReportBoxWrapper]);
+  display([
+    Warning_msg,
+    TsunamiReport,
+    TsunamiInfoBox,
+    SettingWrapper,
+    ReportBoxWrapper,
+  ]);
   opacity([ReportListWrapper], 1);
   opacity([SettingWrapper, ReportBoxWrapper], 0);
 }
