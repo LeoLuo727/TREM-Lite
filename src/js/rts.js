@@ -157,7 +157,8 @@ function show_rts_dot(data, alert) {
     const pga = data.station[id].pga;
     const config = ReadConfig() || { setting: {} };
     if (data.station[config.setting["station"].name]) {
-      $("#station-max-pga").textContent = `${data.station[config.setting["station"].name].pga} gal`;
+      const usr_pga = data.station[config.setting["station"].name].pga;
+      $("#station-max-pga").textContent = `${usr_pga > 999 ? "999+" : usr_pga.toFixed(2)} gal`;
       $("#station-max-pga").className = `intensity-${alert ? intensity_float_to_int(data.station[config.setting["station"].name].i) : 0}`;
     }
 
