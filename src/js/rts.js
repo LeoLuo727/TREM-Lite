@@ -44,7 +44,7 @@ function show_rts_box(_colors) {
         for (let _i = 0; _i < 4; _i++) {
           const dist = distance(data.eq.lat, data.eq.lon)(
             box[_i][1],
-            box[_i][0],
+            box[_i][0]
           );
           if (variable.eew_list[id].dist / 1000 > dist) SKIP++;
         }
@@ -75,9 +75,9 @@ function show_rts_box(_colors) {
   const geojsonLayer = L.geoJson
     .vt(constant.BOX_GEOJSON, {
       style: (properties) => ({
-        weight    : 3,
-        fillColor : "transparent",
-        color     : _colors_[properties.id] || "transparent",
+        weight: 3,
+        fillColor: "transparent",
+        color: _colors_[properties.id] || "transparent",
       }),
       pane: "detection",
     })
@@ -90,17 +90,17 @@ function show_rts_dot(data, alert) {
 
   if (!alert)
     variable.audio = {
-      shindo : -1,
-      pga    : -1,
-      status : {
-        shindo : 0,
-        pga    : 0,
+      shindo: -1,
+      pga: -1,
+      status: {
+        shindo: 0,
+        pga: 0,
       },
       count: {
-        pga_1    : 0,
-        pga_2    : 0,
-        shindo_1 : 0,
-        shindo_2 : 0,
+        pga_1: 0,
+        pga_2: 0,
+        shindo_1: 0,
+        shindo_2: 0,
       },
     };
   else {
@@ -144,24 +144,25 @@ function show_rts_dot(data, alert) {
     const I = intensity_float_to_int(data.station[id].I);
     const icon = !data.station[id].alert
       ? L.divIcon({
-        className : intensityClass,
-        html      : "<span></span>",
-        iconSize  : [10 + variable.icon_size, 10 + variable.icon_size],
-      })
+          className: intensityClass,
+          html: "<span></span>",
+          iconSize: [10 + variable.icon_size, 10 + variable.icon_size],
+        })
       : L.divIcon({
-        className : I == 0 ? "pga_dot pga-intensity-0" : `dot intensity-${I}`,
-        html      : `<span>${I == 0 ? "" : int_to_intensity(I)}</span>`,
-        iconSize  : [20 + variable.icon_size, 20 + variable.icon_size],
-      });
+          className: I == 0 ? "pga_dot pga-intensity-0" : `dot intensity-${I}`,
+          html: `<span>${I == 0 ? "" : int_to_intensity(I)}</span>`,
+          iconSize: [20 + variable.icon_size, 20 + variable.icon_size],
+        });
 
     const pga = data.station[id].pga;
-    const config = ReadConfig() || { setting: {} };
-    if (data.station[config.setting["station"].name]) {
-      const usr_pga = data.station[config.setting["station"].name].pga;
-      $("#station-max-pga").textContent = `${usr_pga > 999 ? "999+" : usr_pga.toFixed(2)} gal`;
-      $("#station-max-pga").className = `intensity-${alert ? intensity_float_to_int(data.station[config.setting["station"].name].i) : 0}`;
-    }
-
+    const usr_station = data.station[config.setting["station"].name];
+    const usr_pga = usr_station ? usr_station.pga : 0;
+    $("#station-max-pga").textContent = `${
+      usr_pga > 999 ? "999+" : usr_pga.toFixed(2)
+    } gal`;
+    $("#station-max-pga").className = usr_pga
+      ? `intensity-${alert ? intensity_float_to_int(usr_station.i) : 0}`
+      : "intensity-0";
 
     const info = variable.station_info[id].info.at(-1);
     if (data.station[id].alert) {
@@ -180,11 +181,11 @@ function show_rts_dot(data, alert) {
     const station_text = `<div class='report_station_box'><div><span class="tooltip-location">${loc}</span><span class="tooltip-uuid">${id} | ${
       variable.station_info[id].net
     }</span></div><div class="tooltip-fields"><div><span class="tooltip-field-name">加速度(cm/s²)</span><span class="tooltip-field-value">${pga.toFixed(
-      1,
+      1
     )}</span></div><div><span class="tooltip-field-name">速度(cm/s)</span><span class="tooltip-field-value">${data.station[
       id
     ].pgv.toFixed(
-      1,
+      1
     )}</span></div><div><span class="tooltip-field-name">震度</span><span class="tooltip-field-value">${data.station[
       id
     ].i.toFixed(1)}</span></div></div></div>`;
@@ -267,8 +268,8 @@ function show_rts_dot(data, alert) {
     )
       if (!variable.focus.status.intensity)
         variable.station_icon[id] = L.marker([info.lat, info.lon], {
-          icon         : icon,
-          zIndexOffset : I * 1000,
+          icon: icon,
+          zIndexOffset: I * 1000,
         })
           .bindTooltip(station_text, { opacity: 1 })
           .addTo(variable.map);

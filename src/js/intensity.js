@@ -41,8 +41,8 @@ function show_intensity(data) {
       variable.intensity_list[data.id] = {
         data,
         speech: {
-          max : -1,
-          loc : "",
+          max: -1,
+          loc: "",
         },
       };
     else variable.intensity_list[data.id].data = data;
@@ -82,19 +82,19 @@ function show_intensity(data) {
     if (variable.intensity_geojson) variable.intensity_geojson.remove();
     variable.intensity_geojson = L.geoJson
       .vt(require(path.join(__dirname, "../resource/map", "town.json")), {
-        minZoom : 4,
-        maxZoom : 12,
-        buffer  : 256,
-        zIndex  : 5,
-        style   : (args) => {
+        minZoom: 4,
+        maxZoom: 12,
+        buffer: 256,
+        zIndex: 5,
+        style: (args) => {
           const name = args.COUNTYNAME + " " + args.TOWNNAME;
           const intensity = area_intensity_list[name];
           const color = !intensity ? "#3F4045" : int_to_color(intensity);
           return {
-            color       : "transparent",
-            weight      : 0,
-            fillColor   : color,
-            fillOpacity : 1,
+            color: "transparent",
+            weight: 0,
+            fillColor: color,
+            fillOpacity: 1,
           };
         },
       })

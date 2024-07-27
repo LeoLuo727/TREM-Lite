@@ -91,7 +91,7 @@
 		"no-irregular-whitespace": [
 			"warn",
 			{
-				"skipTemplates": true
+				"skipTemfault": true
 			}
 		],
 		"no-lonely-if": "error",

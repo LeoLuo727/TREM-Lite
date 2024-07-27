@@ -648,9 +648,11 @@ li {
 }
 
 .show-account-info {
-  display: grid;
+  display: flex;
   transform: translateX(0%);
   opacity: 1;
+  flex-direction: column;
+  align-items: center;
 }
 
 .login-form-input {

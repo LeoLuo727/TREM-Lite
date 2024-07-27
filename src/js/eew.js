@@ -19,6 +19,7 @@ setInterval(() => {
       rts_replay_time = 0;
       variable.replay = 0;
       variable.report.replay_data = {};
+      variable.map.setView([23.6, 120.4], 7.8);
 
       if (variable.eew_list[data.id].layer.s)
         variable.eew_list[data.id].layer.s.remove();
@@ -46,10 +47,9 @@ setInterval(() => {
     if (_eew_list[last_map_count] == id) {
       variable.focus.bounds.eew.extend([data.eq.lat, data.eq.lon]);
       if (data.detail == 0) {
-
       } else if (!data.eq.max)
         variable.focus.bounds.eew.extend(
-          variable.eew_list[data.id].layer.s.getBounds(),
+          variable.eew_list[data.id].layer.s.getBounds()
         );
       else {
         const intensity_list =
@@ -67,16 +67,16 @@ setInterval(() => {
     }
     if (s_t) {
       const progress = Math.floor(
-        ((now_time - data.eq.time) / 1000 / s_t) * 100,
+        ((now_time - data.eq.time) / 1000 / s_t) * 100
       );
       const progress_bar = `<div style="border-radius: 5px;background-color: aqua;height: ${progress}%;"></div>`;
       variable.eew_list[data.id].layer.epicenterTooltip = true;
       variable.eew_list[data.id].layer.epicenterIcon.bindTooltip(progress_bar, {
-        opacity   : 1,
-        permanent : true,
-        direction : "right",
-        offset    : [10, 0],
-        className : "progress-tooltip",
+        opacity: 1,
+        permanent: true,
+        direction: "right",
+        offset: [10, 0],
+        className: "progress-tooltip",
       });
     } else if (variable.eew_list[data.id].layer.epicenterTooltip) {
       variable.eew_list[data.id].layer.epicenterIcon.unbindTooltip();
@@ -114,8 +114,8 @@ setInterval(() => {
       .createHash("sha256")
       .update(
         JSON.stringify(
-          variable.eew_list[_eew_list[last_map_count]].eew_intensity_list,
-        ),
+          variable.eew_list[_eew_list[last_map_count]].eew_intensity_list
+        )
       );
     const digest = hash.digest("hex");
     if (variable.last_map_hash != digest) {
@@ -124,17 +124,17 @@ setInterval(() => {
       if (data.status != 3)
         variable.intensity_geojson = L.geoJson
           .vt(require(path.join(__dirname, "../resource/map", "town.json")), {
-            minZoom : 4,
-            maxZoom : 12,
-            buffer  : 256,
-            zIndex  : 5,
-            style   : (args) => {
+            minZoom: 4,
+            maxZoom: 12,
+            buffer: 256,
+            zIndex: 5,
+            style: (args) => {
               const name = args.COUNTYNAME + " " + args.TOWNNAME;
               const intensity = variable.eew_list[_eew_list[last_map_count]]
                 ? intensity_float_to_int(
-                  variable.eew_list[_eew_list[last_map_count]]
-                    .eew_intensity_list[name].i,
-                )
+                    variable.eew_list[_eew_list[last_map_count]]
+                      .eew_intensity_list[name].i
+                  )
                 : 0;
               variable.eew_list[_eew_list[last_map_count]]
                 ? variable.intensity_list == {}
@@ -148,8 +148,8 @@ setInterval(() => {
                       region_string_to_code(
                         constant.REGION,
                         args.COUNTYNAME,
-                        args.TOWNNAME,
-                      ).toString(),
+                        args.TOWNNAME
+                      ).toString()
                     )
                   ) {
                     nsspe = i;
@@ -162,9 +162,9 @@ setInterval(() => {
                   intensity == 4 || intensity == 5 || intensity == 6
                     ? "grey"
                     : "white",
-                weight      : nsspe ? 1.5 : 0.4,
-                fillColor   : color,
-                fillOpacity : 1,
+                weight: nsspe ? 1.5 : 0.4,
+                fillColor: color,
+                fillOpacity: 1,
               };
             },
           })
@@ -182,13 +182,13 @@ setInterval(() => {
     (!data.status
       ? `地震速報｜${data.author.toUpperCase()}`
       : data.status == 1
-        ? `緊急地震速報｜${data.author.toUpperCase()}`
-        : `地震速報(取消)｜${data.author.toUpperCase()}`);
+      ? `緊急地震速報｜${data.author.toUpperCase()}`
+      : `地震速報(取消)｜${data.author.toUpperCase()}`);
   $("#info-box").style.backgroundColor = !data.status
     ? "#FF9900"
     : data.status == 1
-      ? "#C00000"
-      : "#505050";
+    ? "#C00000"
+    : "#505050";
   const info_intensity = $("#info-intensity");
   info_intensity.textContent = intensity_list[data.eq.max];
   info_intensity.className = `info-body-title-title-box intensity-${data.eq.max}`;
@@ -268,15 +268,15 @@ function show_eew(data) {
   const icon =
     data.detail == 0
       ? L.divIcon({
-        html      : "<span></span>",
-        iconSize  : [20 + variable.icon_size, 20 + variable.icon_size],
-        className : `nsspe_dot flash intensity-${data.eq.max}`,
-      })
+          html: "<span></span>",
+          iconSize: [20 + variable.icon_size, 20 + variable.icon_size],
+          className: `nsspe_dot flash intensity-${data.eq.max}`,
+        })
       : L.icon({
-        iconUrl   : "../resource/image/cross.png",
-        iconSize  : [40 + variable.icon_size * 3, 40 + variable.icon_size * 3],
-        className : "flash",
-      });
+          iconUrl: "../resource/image/cross.png",
+          iconSize: [40 + variable.icon_size * 3, 40 + variable.icon_size * 3],
+          className: "flash",
+        });
 
   if (!variable.eew_list[data.id] || variable.eew_list[data.id].cancel) {
     if (variable.eew_list[data.id] && variable.eew_list[data.id].cancel) {
@@ -285,11 +285,11 @@ function show_eew(data) {
     } else if (checkbox("sound-effects-EEW") == 1) constant.AUDIO.EEW.play();
 
     variable.eew_list[data.id] = {
-      data   : data,
-      speech : {
-        loc   : "",
-        max   : -1,
-        timer : null,
+      data: data,
+      speech: {
+        loc: "",
+        max: -1,
+        timer: null,
       },
       layer: {
         epicenterIcon: L.marker([data.eq.lat, data.eq.lon], {
@@ -300,30 +300,30 @@ function show_eew(data) {
           data.detail == 0
             ? null
             : L.circle([data.eq.lat, data.eq.lon], {
-              color     : "#00FFFF",
-              fillColor : "transparent",
-              radius    : p_dist,
-              weight    : 2,
-            }).addTo(variable.map),
+                color: "#00FFFF",
+                fillColor: "transparent",
+                radius: p_dist,
+                weight: 2,
+              }).addTo(variable.map),
         s:
           data.detail == 0
             ? null
             : L.circle([data.eq.lat, data.eq.lon], {
-              color     : data.status ? "red" : "#FF9224",
-              fillColor : "transparent",
-              radius    : s_dist,
-              weight    : 2,
-            }).addTo(variable.map),
+                color: data.status ? "red" : "#FF9224",
+                fillColor: "transparent",
+                radius: s_dist,
+                weight: 2,
+              }).addTo(variable.map),
         s_fill:
           data.detail == 0
             ? null
             : L.gradientCircle([data.eq.lat, data.eq.lon], {
-              radius         : s_dist,
-              gradientColors : data.status
-                ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.6)"]
-                : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.6)"],
-              pane: "circlePane",
-            }).addTo(variable.map),
+                radius: s_dist,
+                gradientColors: data.status
+                  ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.6)"]
+                  : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.6)"],
+                pane: "circlePane",
+              }).addTo(variable.map),
       },
       dist: 0,
     };
@@ -333,16 +333,16 @@ function show_eew(data) {
         ((now_time - data.eq.time) /
           1000 /
           constant.TIME_TABLE[data.eq.depth][0].S) *
-          100,
+          100
       );
       const progress_bar = `<div style="border-radius: 5px;background-color: aqua;height: ${progress}%;"></div>`;
       variable.eew_list[data.id].layer.epicenterTooltip = true;
       variable.eew_list[data.id].layer.epicenterIcon.bindTooltip(progress_bar, {
-        opacity   : 1,
-        permanent : true,
-        direction : "right",
-        offset    : [10, 0],
-        className : "progress-tooltip",
+        opacity: 1,
+        permanent: true,
+        direction: "right",
+        offset: [10, 0],
+        className: "progress-tooltip",
       });
     } else if (variable.eew_list[data.id].layer.epicenterTooltip) {
       variable.eew_list[data.id].layer.epicenterIcon.unbindTooltip();
@@ -359,21 +359,21 @@ function show_eew(data) {
         variable.eew_list[data.id].layer.s = L.circle(
           [data.eq.lat, data.eq.lon],
           {
-            color     : data.status ? "red" : "#FF9224",
-            fillColor : "transparent",
-            radius    : s_dist,
-            weight    : 2,
-          },
+            color: data.status ? "red" : "#FF9224",
+            fillColor: "transparent",
+            radius: s_dist,
+            weight: 2,
+          }
         ).addTo(variable.map);
         variable.eew_list[data.id].layer.s_fill = L.gradientCircle(
           [data.eq.lat, data.eq.lon],
           {
-            radius         : s_dist,
-            gradientColors : data.status
+            radius: s_dist,
+            gradientColors: data.status
               ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.6)"]
               : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.6)"],
             pane: "circlePane",
-          },
+          }
         ).addTo(variable.map);
       }
     } else {
@@ -392,32 +392,32 @@ function show_eew(data) {
       variable.eew_list[data.id].layer.p = L.circle(
         [data.eq.lat, data.eq.lon],
         {
-          color     : "#00FFFF",
-          fillColor : "transparent",
-          radius    : p_dist,
-          weight    : 2,
-        },
+          color: "#00FFFF",
+          fillColor: "transparent",
+          radius: p_dist,
+          weight: 2,
+        }
       ).addTo(variable.map);
       if (!variable.eew_list[data.id].layer.s)
         variable.eew_list[data.id].layer.s = L.circle(
           [data.eq.lat, data.eq.lon],
           {
-            color     : data.status ? "red" : "#FF9224",
-            fillColor : "transparent",
-            radius    : s_dist,
-            weight    : 2,
-          },
+            color: data.status ? "red" : "#FF9224",
+            fillColor: "transparent",
+            radius: s_dist,
+            weight: 2,
+          }
         ).addTo(variable.map);
       if (!variable.eew_list[data.id].layer.s_fill)
         variable.eew_list[data.id].layer.s_fill = L.gradientCircle(
           [data.eq.lat, data.eq.lon],
           {
-            radius         : s_dist,
-            gradientColors : data.status
+            radius: s_dist,
+            gradientColors: data.status
               ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.6)"]
               : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.6)"],
             pane: "circlePane",
-          },
+          }
         ).addTo(variable.map);
       variable.eew_list[data.id].layer.epicenterIcon.setIcon(icon);
     } else if (data.detail == 0)
@@ -462,7 +462,7 @@ function show_eew(data) {
     data.eq.lat,
     data.eq.lon,
     data.eq.depth,
-    data.eq.mag,
+    data.eq.mag
   );
   // console.log(intensity_list);
   variable.last_map_update = 0;
@@ -519,7 +519,7 @@ L.GradientCircle = L.Circle.extend({
   },
 });
 
-L.gradientCircle = function(latlng, options) {
+L.gradientCircle = function (latlng, options) {
   return new L.GradientCircle(latlng, options);
 };
 
@@ -546,7 +546,7 @@ L.Canvas.include({
       r * 0.3,
       p.x,
       p.y / s,
-      r,
+      r
     );
     gradient.addColorStop(0, layer.options.gradientColors[0]);
     gradient.addColorStop(1, layer.options.gradientColors[1]);

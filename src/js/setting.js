@@ -30,8 +30,6 @@ system_os.textContent = `${os.version()} (${os.release()})`;
 system_cpu.textContent = `${os.cpus()[0].model}`;
 
 async function ls_init() {
-  const config = ReadConfig() || { setting: {} };
-
   await realtimeStation();
   Object.entries(constant.SETTING.LOCALSTORAGE_DEF).forEach(([key, value]) => {
     if (!config.setting[key]) {
@@ -55,6 +53,11 @@ async function ls_init() {
 
   config.setting["user-checkbox"] = userCheckbox;
   WriteConfig(config);
+
+  if (config.setting["login"]) {
+    LoginBtn.click();
+    LoginSuccess(await getUserInfo(config.setting["login"]));
+  }
 }
 ls_init();
 
@@ -62,12 +65,12 @@ ls_init();
 querySelectorAll(".setting-buttons .button").forEach((button) => {
   button.addEventListener("click", () => {
     querySelectorAll(".setting-options-page").forEach((page) =>
-      page.classList.remove("active"),
+      page.classList.remove("active")
     );
     querySelector(`.${button.getAttribute("for")}`).classList.add("active");
 
     querySelectorAll(".setting-buttons .button").forEach((btn) =>
-      btn.classList.remove("on"),
+      btn.classList.remove("on")
     );
     button.classList.add("on");
   });
@@ -115,7 +118,7 @@ Back.addEventListener("click", () => {
 });
 
 // 所在地-下拉選單點擊事件
-Location.addEventListener("click", function() {
+Location.addEventListener("click", function () {
   const ArrowSpan = this.querySelector(".selected-btn");
   ArrowSpan.textContent =
     ArrowSpan.textContent.trim() == "keyboard_arrow_up"
@@ -128,12 +131,12 @@ Location.addEventListener("click", function() {
 const addLocationSelectEvent = (
   localItemsContainer,
   cityItemsContainer,
-  selectElement,
+  selectElement
 ) => {
   [localItemsContainer, cityItemsContainer].forEach((container) => {
     container.addEventListener("click", (event) => {
       const closestDiv = event.target.closest(
-        ".usr-location .select-items > div",
+        ".usr-location .select-items > div"
       );
       if (closestDiv) {
         const selectedOption = closestDiv.textContent;
@@ -163,7 +166,7 @@ localItems.addEventListener("click", (event) => {
   if (closestDiv) {
     updateLocationSelectItems(
       CityItems,
-      constant.SETTING.LOCAL_ARRAY[closestDiv.textContent],
+      constant.SETTING.LOCAL_ARRAY[closestDiv.textContent]
     );
     updateLocationSelectItems(TownItems, []);
   }
@@ -176,7 +179,7 @@ CityItems.addEventListener("click", (event) => {
     CitySel.textContent = closestDiv.textContent;
     updateLocationSelectItems(
       TownItems,
-      constant.SETTING.SPECIAL_LOCAL[closestDiv.textContent] || [],
+      constant.SETTING.SPECIAL_LOCAL[closestDiv.textContent] || []
     );
   }
 });
@@ -198,21 +201,21 @@ TownItems.addEventListener("click", (event) => {
         constant.REGION[CitySel.textContent][closestDiv.textContent];
       usrLocalStation = NearStation(
         usr_location_info.lat,
-        usr_location_info.lon,
+        usr_location_info.lon
       );
     } else
       usrLocalStation = findStationByLocation(
         CitySel.textContent,
-        closestDiv.textContent,
+        closestDiv.textContent
       );
 
     querySelector(
-      ".current-station",
+      ".current-station"
     ).textContent = `${usrLocalStation.net} ${usrLocalStation.code}-${usrLocalStation.name} ${usrLocalStation.loc}`;
     SaveSelectedLocationToStorage(
       CitySel.textContent,
       closestDiv.textContent,
-      JSON.stringify(usrLocalStation),
+      JSON.stringify(usrLocalStation)
     );
     usr_location();
   }
@@ -231,7 +234,7 @@ function NearStation(la, lo) {
 
   for (const station of variable.setting.station) {
     const dist_surface = Math.sqrt(
-      (la - station.lat) ** 2 * 111 ** 2 + (lo - station.lon) ** 2 * 101 ** 2,
+      (la - station.lat) ** 2 * 111 ** 2 + (lo - station.lon) ** 2 * 101 ** 2
     );
     if (dist_surface < min) {
       min = dist_surface;
@@ -253,11 +256,9 @@ const SaveSelectedLocationToStorage = (city, town, station) => {
     const locationData = {
       city,
       town,
-      lat : coordinate.lat,
-      lon : coordinate.lon,
+      lat: coordinate.lat,
+      lon: coordinate.lon,
     };
-
-    const config = ReadConfig() || { setting: {} };
     config.setting["location"] = locationData;
     config.setting["station"] = JSON.parse(station);
     WriteConfig(config);
@@ -298,12 +299,12 @@ function processStationData(data) {
       constant.SETTING.STATION_REGION.push(loc.city);
 
     variable.setting.station.push({
-      name : station,
-      net  : data[station].net,
-      loc  : loc.city ? `${loc.city}${loc.town}` : loc,
-      code : info.code,
-      lat  : info.lat,
-      lon  : info.lon,
+      name: station,
+      net: data[station].net,
+      loc: loc.city ? `${loc.city}${loc.town}` : loc,
+      code: info.code,
+      lat: info.lat,
+      lon: info.lon,
     });
   });
 }
@@ -319,7 +320,7 @@ function RenderStationReg() {
 
   const uniqueRegions = [
     ...new Set(
-      constant.SETTING.STATION_REGION.map((city) => city.slice(0, -1)),
+      constant.SETTING.STATION_REGION.map((city) => city.slice(0, -1))
     ),
   ];
 
@@ -338,13 +339,13 @@ function handleCityItemClick(event) {
   const target = event.target.closest(".realtime-station .select-items > div");
   if (target) {
     StationLocalItems.querySelectorAll("div").forEach((div) =>
-      div.classList.remove("select-option-selected"),
+      div.classList.remove("select-option-selected")
     );
     target.classList.add("select-option-selected");
 
     const selectedCity = target.textContent;
     const filteredStations = variable.setting.station.filter((station) =>
-      station.loc.includes(selectedCity),
+      station.loc.includes(selectedCity)
     );
     renderFilteredStations(filteredStations);
   }
@@ -358,12 +359,12 @@ function renderFilteredStations(stations) {
 
   stations.forEach((station) => {
     const stationAttr = {
-      "data-net"  : station.net,
-      "data-code" : station.code,
-      "data-name" : station.name,
-      "data-loc"  : station.loc,
-      "data-lat"  : station.lat,
-      "data-lon"  : station.lon,
+      "data-net": station.net,
+      "data-code": station.code,
+      "data-name": station.name,
+      "data-loc": station.loc,
+      "data-lat": station.lat,
+      "data-lon": station.lon,
     };
     const stationDiv = CreatEle("", "", "", "", stationAttr);
 
@@ -398,7 +399,7 @@ StationSelEvent(StationItems);
 function StationSelEvent(itemsContainer) {
   itemsContainer.addEventListener("click", (event) => {
     const closestDiv = event.target.closest(
-      ".realtime-station .select-items > div",
+      ".realtime-station .select-items > div"
     );
     if (closestDiv) {
       itemsContainer
@@ -410,16 +411,15 @@ function StationSelEvent(itemsContainer) {
       if (match) {
         StationSel.textContent = `${match[1]} ${match[2]}`;
         querySelector(
-          ".current-station",
+          ".current-station"
         ).textContent = `${match[1]} ${match[2]}`;
         const stationData = Object.fromEntries(
           ["net", "code", "name", "loc", "lat", "lon"].map((attr) => [
             attr,
             closestDiv.getAttribute(`data-${attr}`),
-          ]),
+          ])
         );
 
-        const config = ReadConfig() || { setting: {} };
         config.setting["station"] = stationData;
         WriteConfig(config);
       }
@@ -430,7 +430,7 @@ function StationSelEvent(itemsContainer) {
 const LoginFormContent = $(".login-forms-content");
 const AccountInfoContent = $(".usr-account-info-content");
 const act = $(".account");
-const vip = $(".vip");
+const vip_time = $(".vip_time");
 const LogoutBtn = $(".logout-btn");
 const LoginBack = $(".login-back");
 
@@ -443,7 +443,7 @@ const url = "https://api-1.exptech.com.tw/api/v3/et/";
 // 登入-切換登入表單和帳號資訊
 function toggleForms(isLogin) {
   display([LoginFormContent], isLogin ? "grid" : "none");
-  display([AccountInfoContent], isLogin ? "none" : "block");
+  display([AccountInfoContent], isLogin ? "none" : "flex");
 }
 
 // 登入-跳轉到登入表單
@@ -473,7 +473,6 @@ FormLogin.addEventListener("click", async () => {
 
 // 登入-表單登出按鈕
 LogoutBtn.addEventListener("click", async () => {
-  const config = ReadConfig() || { setting: {} };
   const token = config.setting["user-key"];
   await logout(token);
 });
@@ -482,8 +481,8 @@ LogoutBtn.addEventListener("click", async () => {
 function LoginSuccess(msg) {
   display([LoginBtn]);
   display([LogoutBtn], "flex");
-  act.textContent = "Welcome";
-  vip.textContent = `VIP-${msg.vip}`;
+  act.textContent = `Welcome,${msg ? "VIP" : "User"}`;
+  vip_time.textContent = msg.vip > 0 ? formatTime(msg.vip) : "";
   LoginBack.dispatchEvent(clickEvent);
 }
 
@@ -492,7 +491,6 @@ function LogoutSuccess() {
   display([LogoutBtn]);
   display([LoginBtn], "flex");
   act.textContent = "尚未登入";
-  vip.textContent = "";
   localStorage.removeItem("user-key", "");
   LoginBtn.dispatchEvent(clickEvent);
 }
@@ -512,7 +510,6 @@ async function handleUserAction(endpoint, options) {
         options.method == "POST" ? "登入" : "登出"
       }成功！`;
 
-      const config = ReadConfig() || { setting: {} };
       const data = { login: responseData };
       config.setting.login = data.login == "OK" ? "" : data.login || "";
       WriteConfig(config);
@@ -532,7 +529,7 @@ async function handleUserAction(endpoint, options) {
       () => {
         LoginMsg.classList.remove("shake");
       },
-      { once: true },
+      { once: true }
     );
   } catch (error) {
     console.error("Error:", error);
@@ -544,13 +541,13 @@ async function login(email, password) {
   const ver = app.getVersion().split("-")[1];
   const requestBody = {
     email,
-    pass : password,
-    name : `/TREM-Lite/${ver}/${os.release()}`,
+    pass: password,
+    name: `/TREM-Lite/${ver}/${os.release()}`,
   };
   const options = {
-    method  : "POST",
-    headers : { "Content-Type": "application/json" },
-    body    : JSON.stringify(requestBody),
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(requestBody),
   };
   await handleUserAction("login", options);
 }
@@ -558,10 +555,10 @@ async function login(email, password) {
 // 登入-表單登出
 async function logout(token) {
   const options = {
-    method  : "DELETE",
-    headers : {
-      "Content-Type" : "application/json",
-      Authorization  : `Basic ${token}`,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${token}`,
     },
   };
   await handleUserAction("logout", options);
@@ -569,12 +566,13 @@ async function logout(token) {
 
 // 登入-取得使用者資訊
 async function getUserInfo(token, retryCount = 0) {
+  console.log(token);
   try {
     const response = await fetch(`${url}info`, {
-      method  : "GET",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization  : `Basic ${token}`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${token}`,
       },
     });
     if (response.ok) return await response.json();
@@ -583,15 +581,15 @@ async function getUserInfo(token, retryCount = 0) {
     if (retryCount < variable.report.list_retry) {
       logger.error(`[Fetch] ${error} (Try #${retryCount})`);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      awaitgetUserInfo(token, retryCount + 1);
+      await getUserInfo(token, retryCount + 1);
     }
   }
 }
 
 const clickEvent = new MouseEvent("click", {
-  bubbles    : 1,
-  cancelable : 1,
-  view       : window,
+  bubbles: 1,
+  cancelable: 1,
+  view: window,
 });
 
 // 預警條件
@@ -622,7 +620,6 @@ function initializeSel(type, location, showInt, selectWrapper, items) {
 }
 
 function updateLocalStorage(typeClassName, selectedValue) {
-  const config = ReadConfig() || { setting: {} };
   const data = config.setting["warning"] || {};
   const key = typeClassName.includes("warning-realtime-station")
     ? "realtime-station"
@@ -690,7 +687,6 @@ addEventListener("mousemove", (event) => {
     sliderTrack.style.width = `${percentage}%`;
     SettingWrapper.style.backdropFilter = `blur(${blurValue}px)`;
 
-    const config = ReadConfig() || { setting: {} };
     config.setting["bg-percentage"] = percentage;
     config.setting["bg-filter"] = blurValue;
     WriteConfig(config);
@@ -699,8 +695,6 @@ addEventListener("mousemove", (event) => {
 
 // 從storage取得user之前保存的選項
 const GetSelectedFromStorage = () => {
-  const config = ReadConfig() || { setting: {} };
-
   const locationData = config.setting["location"] || {};
   const warningData = config.setting["warning"] || {};
   sliderThumb.style.left = `${
@@ -713,10 +707,10 @@ const GetSelectedFromStorage = () => {
     config.setting["bg-filter"] ? config.setting["bg-filter"] : 20
   }px)`;
   return {
-    city    : locationData.city ? locationData.city : "臺南市",
-    town    : locationData.town ? locationData.town : "歸仁區",
-    station : config.setting["station"] ? config.setting["station"] : "未知區域",
-    wrts    : warningData["realtime-station"]
+    city: locationData.city ? locationData.city : "臺南市",
+    town: locationData.town ? locationData.town : "歸仁區",
+    station: config.setting["station"] ? config.setting["station"] : "未知區域",
+    wrts: warningData["realtime-station"]
       ? warningData["realtime-station"]
       : constant.SETTING.INTENSITY[0],
     wei: warningData["estimate-int"]
@@ -734,7 +728,6 @@ const RenderSelectedFromStorage = () => {
   const { city, town, station, wrts, wei, effect, selectedcheckbox } =
     GetSelectedFromStorage();
   const current_station = $(".current-station");
-  const config = ReadConfig() || { setting: {} };
 
   querySelector(".current-city").textContent = city;
   querySelector(".current-town").textContent = town;
@@ -779,7 +772,7 @@ if (MapDisplayEffItems)
 const addMapDisplayEffSelEvent = (container, selectElement) => {
   container.addEventListener("click", (event) => {
     const closestDiv = event.target.closest(
-      ".usr-location .select-items > div",
+      ".usr-location .select-items > div"
     );
     if (closestDiv) {
       selectElement.textContent = closestDiv.textContent;
@@ -791,7 +784,7 @@ const addMapDisplayEffSelEvent = (container, selectElement) => {
   });
 };
 
-MapDisplayEffLocation.addEventListener("click", function() {
+MapDisplayEffLocation.addEventListener("click", function () {
   const ArrowSpan = this.querySelector(".selected-btn");
   ArrowSpan.textContent =
     ArrowSpan.textContent.trim() == "keyboard_arrow_up"
@@ -802,16 +795,15 @@ MapDisplayEffLocation.addEventListener("click", function() {
 
 MapDisplayEffItems.addEventListener("click", (event) => {
   const closestDiv = event.target.closest(
-    ".map-display-effect .select-items > div",
+    ".map-display-effect .select-items > div"
   );
   if (closestDiv) {
     MapDisplayEffSel.textContent = closestDiv.textContent;
     MapDisplayEffSelWrapper.querySelectorAll("div").forEach((div) =>
-      div.classList.remove("select-option-selected"),
+      div.classList.remove("select-option-selected")
     );
     closestDiv.classList.toggle("select-option-selected");
 
-    const config = ReadConfig() || { setting: {} };
     config.setting["map-display-effect"] = closestDiv.dataset.value;
     WriteConfig(config);
   }
@@ -820,8 +812,6 @@ MapDisplayEffItems.addEventListener("click", (event) => {
 addMapDisplayEffSelEvent(MapDisplayEffItems, MapDisplayEffSel);
 
 const Tos = $(".tos");
-const Tos_Sure = $(".tos_sure");
-
 if (!ReadConfig().setting["tos"]) {
   display([Tos], "flex");
   setTimeout(() => {
@@ -831,52 +821,50 @@ if (!ReadConfig().setting["tos"]) {
   }, 2500);
 }
 
-Tos_Sure.addEventListener("click", () => {
+$(".tos_sure").addEventListener("click", () => {
   opacity([Tos], 0);
   setTimeout(() => {
     display([Tos]);
-
-    const config = ReadConfig() || { setting: {} };
     config.setting["tos"] = 1;
     WriteConfig(config);
   }, 2000);
 });
 
 /** 滑條選中**/
-const checkboxes = querySelectorAll(".switch input[type='checkbox']");
+const checkboxes = document.querySelectorAll(".switch input[type='checkbox']");
 const updateCheckboxesLocalStorage = () => {
-  const selectedCheckbox = Array.from(checkboxes).reduce((acc, cb) => {
-    acc[cb.id] = cb.checked ? 1 : 0;
-    return acc;
-  }, {});
+  const selectedCheckbox = Object.fromEntries(
+    Array.from(checkboxes).map((cb) => [cb.id, cb.checked ? 1 : 0])
+  );
 
-  const config = ReadConfig() || { setting: {} };
   config.setting["user-checkbox"] = selectedCheckbox;
   WriteConfig(config);
+  fault();
 };
 
 checkboxes.forEach((checkbox) =>
-  checkbox.addEventListener("change", updateCheckboxesLocalStorage),
+  checkbox.addEventListener("change", updateCheckboxesLocalStorage)
 );
 
 /** 檢查新版本**/
 const app_version = app.getVersion();
-
 async function checkForNewRelease() {
   try {
     const response = await fetch(
-      "https://api.github.com/repos/ExpTechTW/TREM-Lite/releases",
+      "https://api.github.com/repos/ExpTechTW/TREM-Lite/releases"
     );
     if (!response.ok) throw new Error("Network response was not ok");
-
     const releases = await response.json();
     if (releases.length > 0) {
-      const latestRelease = releases[0];
-      const latestVersion = latestRelease.tag_name;
-      const comparisonResult = compareVersions(latestVersion, app_version);
-      if (comparisonResult == 1) {
+      const latestVersion = releases[0].tag_name.replace("v", "");
+      NewVersion.textContent = latestVersion;
+      CurrentVersion.textContent = app_version;
+      if (compareVersions(latestVersion, app_version) > 0) {
         NewVersion.style.color = "#fff900";
-        AppVersion.classList.toggle("new");
+        AppVersion.classList.add("new");
+        AppVersion.style.display = "flex";
+      } else {
+        AppVersion.style.display = "none";
       }
     }
   } catch (error) {
@@ -884,28 +872,21 @@ async function checkForNewRelease() {
   }
 }
 
-function compareVersions(last, current) {
-  let lst = last.replace("v", "");
-  NewVersion.textContent = lst;
-  CurrentVersion.textContent = current;
-
-  if (last.includes("-")) lst = lst.split("-")[0];
-  const curr = current.split("-")[0];
-  const parts1 = lst.split(".").map(Number);
-  const parts2 = curr.split(".").map(Number);
-  const length = Math.max(parts1.length, parts2.length);
+function compareVersions(latest, current) {
+  const toNumberArray = (version) => version.split(".").map(Number);
+  const [latestParts, currentParts] = [
+    toNumberArray(latest),
+    toNumberArray(current),
+  ];
+  const length = Math.max(latestParts.length, currentParts.length);
   for (let i = 0; i < length; i++) {
-    AppVersion.style.display = "flex";
-    const part1 = parts1[i] || 0;
-    const part2 = parts2[i] || 0;
-    if (part1 > part2) return 1;
-    else if (part1 < part2) return -1;
-    else AppVersion.style.display = "none";
+    const [latestPart, currentPart] = [
+      latestParts[i] || 0,
+      currentParts[i] || 0,
+    ];
+    if (latestPart > currentPart) return 1;
+    if (latestPart < currentPart) return -1;
   }
   return 0;
 }
 checkForNewRelease();
-
-setInterval(() => {
-  checkForNewRelease();
-}, 3600_000);

@@ -1745,3 +1745,14 @@ body:has(#report-panel.show) .pga_dot {
     border-color: transparent;
   }
 }
+
+.stop_replay_wrapper {
+  position: absolute;
+  bottom: 0.3em;
+  left: 11.5em;
+  margin: 2px;
+  display: none;
+  z-index: 1001;
+  margin-left: 5px;
+  font-weight: bold;
+}

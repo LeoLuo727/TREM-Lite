@@ -32,8 +32,8 @@ function region_code_to_string(region, code) {
         return {
           city,
           town,
-          lat : region[city][town].lat,
-          lon : region[city][town].lon,
+          lat: region[city][town].lat,
+          lon: region[city][town].lon,
         };
   return null;
 }
@@ -57,7 +57,7 @@ function formatTime(timestamp) {
 
 function findClosest(arr, target) {
   return arr.reduce((prev, curr) =>
-    Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev,
+    Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev
   );
 }
 
@@ -88,7 +88,7 @@ function eew_area_pga(lat, lon, depth, mag) {
 function eew_location_info(data) {
   const dist_surface = distance(data.lat, data.lon)(
     TREM.user.lat,
-    TREM.user.lon,
+    TREM.user.lon
   );
   const dist = Math.sqrt(pow(dist_surface) + pow(data.depth));
   const pga =
@@ -102,7 +102,7 @@ function eew_location_info(data) {
       [data.lat, data.lon],
       [TREM.user.lat, TREM.user.lon],
       data.depth,
-      data.scale,
+      data.scale
     );
   return { dist, i };
 }
@@ -111,7 +111,7 @@ function eew_area_pgv(epicenterLocaltion, pointLocaltion, depth, magW) {
   const long = 10 ** (0.5 * magW - 1.85) / 2;
   const epicenterDistance = distance(
     epicenterLocaltion[0],
-    epicenterLocaltion[1],
+    epicenterLocaltion[1]
   )(pointLocaltion[0], pointLocaltion[1]);
   const hypocenterDistance =
     (depth ** 2 + epicenterDistance ** 2) ** 0.5 - long;
@@ -129,7 +129,7 @@ function eew_area_pgv(epicenterLocaltion, pointLocaltion, depth, magW) {
 }
 
 function distance(latA, lngA) {
-  return function(latB, lngB) {
+  return function (latB, lngB) {
     latA = (latA * Math.PI) / 180;
     lngA = (lngA * Math.PI) / 180;
     latB = (latB * Math.PI) / 180;
@@ -140,7 +140,7 @@ function distance(latA, lngA) {
     const cos_latB = Math.cos(Math.atan(Math.tan(latB)));
     return (
       Math.acos(
-        sin_latA * sin_latB + cos_latA * cos_latB * Math.cos(lngA - lngB),
+        sin_latA * sin_latB + cos_latA * cos_latB * Math.cos(lngA - lngB)
       ) * 6371.008
     );
   };
@@ -158,16 +158,16 @@ function intensity_float_to_int(float) {
   return float < 0
     ? 0
     : float < 4.5
-      ? Math.round(float)
-      : float < 5
-        ? 5
-        : float < 5.5
-          ? 6
-          : float < 6
-            ? 7
-            : float < 6.5
-              ? 8
-              : 9;
+    ? Math.round(float)
+    : float < 5
+    ? 5
+    : float < 5.5
+    ? 6
+    : float < 6
+    ? 7
+    : float < 6.5
+    ? 8
+    : 9;
 }
 
 function int_to_color(int) {
@@ -187,9 +187,9 @@ function int_to_color(int) {
 }
 
 const domMethods = {
-  querySelector    : document.querySelector.bind(document),
-  querySelectorAll : document.querySelectorAll.bind(document),
-  createElement    : document.createElement.bind(document),
+  querySelector: document.querySelector.bind(document),
+  querySelectorAll: document.querySelectorAll.bind(document),
+  createElement: document.createElement.bind(document),
 };
 
 const { querySelector, querySelectorAll, createElement, getElementById } =

@@ -19,24 +19,24 @@ const os = require("node:os");
 constant.TIME_TABLE = require(path.join(
   __dirname,
   "../resource/data",
-  "time.json",
+  "time.json"
 ));
 constant.TIME_TABLE_OBJECT = Object.keys(constant.TIME_TABLE);
 constant.REGION = require(path.join(
   __dirname,
   "../resource/data",
-  "region.json",
+  "region.json"
 ));
 constant.BOX_GEOJSON = require(path.join(
   __dirname,
   "../resource/map",
-  "box.json",
+  "box.json"
 ));
 constant.BOX_GEOJSON.features.forEach(
   (feature) =>
     (feature.properties = {
       id: feature.id,
-    }),
+    })
 );
 
 const replayPath = path.join(app.getPath("userData"), "replay");

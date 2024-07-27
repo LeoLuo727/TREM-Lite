@@ -4,14 +4,14 @@ variable.map = L.map("map", {
     [60, 50],
     [10, 180],
   ],
-  preferCanvas       : true,
-  attributionControl : false,
-  zoomSnap           : 0.25,
-  zoomDelta          : 0.25,
-  doubleClickZoom    : false,
-  zoomControl        : false,
-  minZoom            : 5.5,
-  maxZoom            : 10,
+  preferCanvas: true,
+  attributionControl: false,
+  zoomSnap: 0.25,
+  zoomDelta: 0.25,
+  doubleClickZoom: false,
+  zoomControl: false,
+  minZoom: 5.5,
+  maxZoom: 10,
 });
 
 variable.map.createPane("circlePane");
@@ -23,14 +23,14 @@ variable.map.getPane("detection").style.zIndex = 2000;
 for (const map_name of constant.MAP_LIST)
   L.geoJson
     .vt(require(path.join(__dirname, "../resource/map", `${map_name}.json`)), {
-      edgeBufferTiles : 2,
-      minZoom         : 5.5,
-      maxZoom         : 10,
-      style           : {
-        weight      : 0.6,
-        color       : map_name == "TW" ? "white" : "gray",
-        fillColor   : "#3F4045",
-        fillOpacity : 0.5,
+      edgeBufferTiles: 2,
+      minZoom: 5.5,
+      maxZoom: 10,
+      style: {
+        weight: 0.6,
+        color: map_name == "TW" ? "white" : "gray",
+        fillColor: "#3F4045",
+        fillOpacity: 0.5,
       },
     })
     .addTo(variable.map);
@@ -76,11 +76,11 @@ function updateIconSize() {
 
     if (oldMarker.getTooltip())
       oldMarker.bindTooltip(oldMarker.getTooltip()._content, {
-        opacity   : 1,
-        permanent : true,
-        direction : "right",
-        offset    : [newIconSize[0] / 2, 0],
-        className : "progress-tooltip",
+        opacity: 1,
+        permanent: true,
+        direction: "right",
+        offset: [newIconSize[0] / 2, 0],
+        className: "progress-tooltip",
       });
 
     if (variable.eew_list[key].cancel) {
@@ -97,11 +97,11 @@ function updateIconSize() {
 variable.map.on("zoomend", updateIconSize);
 
 variable.focus.bounds = {
-  report    : L.latLngBounds(),
-  intensity : L.latLngBounds(),
-  tsunami   : L.latLngBounds(),
-  eew       : L.latLngBounds(),
-  rts       : L.latLngBounds(),
+  report: L.latLngBounds(),
+  intensity: L.latLngBounds(),
+  tsunami: L.latLngBounds(),
+  eew: L.latLngBounds(),
+  rts: L.latLngBounds(),
 };
 
 let intensity_focus = 0;
@@ -141,9 +141,11 @@ setInterval(() => {
         if (Math.abs(zoom - zoom_now) < 0.2) zoom = zoom_now;
         const set_center = Math.sqrt(
           pow((center.lat - center_now.lat) * 111) +
-            pow((center.lng - center_now.lng) * 101),
+            pow((center.lng - center_now.lng) * 101)
         );
-        variable.map.setView(set_center > 10 ? center : center_now, zoom);
+        checkbox("graphics-block-auto-zoom") == 1
+          ? ""
+          : variable.map.setView(set_center > 10 ? center : center_now, zoom);
         map_focus = 1;
       }
     } else {
@@ -156,15 +158,15 @@ setInterval(() => {
         if (Math.abs(zoom - zoom_now) < 0.2) zoom = zoom_now;
         const set_center = Math.sqrt(
           pow((center.lat - center_now.lat) * 111) +
-            pow((center.lng - center_now.lng) * 101),
+            pow((center.lng - center_now.lng) * 101)
         );
-        variable.map.setView(set_center > 10 ? center : center_now, zoom);
+        checkbox("graphics-block-auto-zoom") == 1
+          ? ""
+          : variable.map.setView(set_center > 10 ? center : center_now, zoom);
         map_focus = 1;
       }
       if (variable.focus.status.eew) {
-        if (Object.keys(variable.focus.bounds.eew).length == 0)
-          return;
-
+        if (Object.keys(variable.focus.bounds.eew).length == 0) return;
 
         variable.focus.status.eew = 0;
         const zoom_now = variable.map.getZoom();
@@ -175,9 +177,11 @@ setInterval(() => {
         if (zoom < 6.5) zoom = 6.5;
         const set_center = Math.sqrt(
           pow((center.lat - center_now.lat) * 111) +
-            pow((center.lng - center_now.lng) * 101),
+            pow((center.lng - center_now.lng) * 101)
         );
-        variable.map.setView(set_center > 10 ? center : center_now, zoom);
+        checkbox("graphics-block-auto-zoom") == 1
+          ? ""
+          : variable.map.setView(set_center > 10 ? center : center_now, zoom);
         map_focus = 1;
       }
     }
@@ -186,15 +190,38 @@ setInterval(() => {
   }
 }, 100);
 
+function fault() {
+  if (variable.fault) {
+    variable.map.removeLayer(variable.fault);
+  }
+
+  if (checkbox("graphics-show-fault") !== 1) return;
+
+  variable.fault = L.geoJson
+    .vt(require(path.join(__dirname, "../resource/map/fault.json")), {
+      edgeBufferTiles: 2,
+      minZoom: 5.5,
+      maxZoom: 10,
+      tolerance: 20,
+      buffer: 256,
+      debug: 0,
+      style: {
+        weight: 1,
+        color: "red",
+      },
+    })
+    .addTo(variable.map);
+}
+fault();
+
 function usr_location() {
   const flashElements = document.querySelectorAll(".usr_loc");
-  flashElements.forEach(element => element.remove());
+  flashElements.forEach((element) => element.remove());
   const usr_ico = L.icon({
-    iconUrl   : "../resource/image/here.png",
-    iconSize  : [25, 25],
-    className : "usr_loc",
+    iconUrl: "../resource/image/here.png",
+    iconSize: [25, 25],
+    className: "usr_loc",
   });
-  const config = ReadConfig() || { setting: {} };
   const location = config.setting["location"];
   L.marker([location.lat, location.lon], { icon: usr_ico }).addTo(variable.map);
 }

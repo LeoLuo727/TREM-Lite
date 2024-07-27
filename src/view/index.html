@@ -564,6 +564,12 @@
             </svg>
         </div>
     </div>
+    <div class="stop_replay_wrapper">
+        <button id="stop-replay" class="chip">
+            <span class="chip-leading-icon material-symbols-rounded">stop_circle</span>
+            <span class="chip-label">結束重播</span>
+        </button>
+    </div>
 
     <!--設定頁面窗口-->
     <div id="settings" class="setting-wrapper">
@@ -583,7 +589,7 @@
                     <div class="usr-account-info-container">
                         <div class="usr-account-info-content show-account-info">
                             <div class="account">尚未登入</div>
-                            <div class="vip"></div>
+                            <div class="vip_time"></div>
                             <div class="login-btn">登入</div>
                             <div class="logout-btn">登出</div>
                         </div>
@@ -883,7 +889,7 @@
                                 <div>
                                     <span>顯示斷層</span>
                                     <label class="switch">
-                                        <input id="graphics-show-plates" type="checkbox">
+                                        <input id="graphics-show-fault" type="checkbox">
                                         <div class="slider round"></div>
                                     </label>
                                 </div>

@@ -33,6 +33,8 @@ const InfoTitleBoxType = $("#info-title-box-type");
 const InfoIntensity = $("#info-intensity");
 
 const RTS_List = $(".intensity-container");
+const StopReplayWrapper = $(".stop_replay_wrapper");
+const StopReplayBtn = $("#stop-replay");
 
 async function report(t, retryCount = 0) {
   let s = variable.report.survey;
@@ -72,7 +74,7 @@ async function report(t, retryCount = 0) {
     const IntWrapper = CreatEle("", "report-list-item-int-wrapper");
     const Int = CreatEle(
       s ? s.max : FirstItem.int,
-      `report-list-item-int intensity-${s ? s.max : FirstItem.int}`,
+      `report-list-item-int intensity-${s ? s.max : FirstItem.int}`
     );
     const IntTitle = CreatEle("觀測最大震度", "report-list-item-int-title");
 
@@ -84,11 +86,11 @@ async function report(t, retryCount = 0) {
     const Info = CreatEle("", "report-list-item-info");
     const Location = CreatEle(
       s ? "震源 調查中" : LocalReplace(FirstItem.loc),
-      "report-list-item-location",
+      "report-list-item-location"
     );
     const Time = CreatEle(
       ReportTimeFormat(s ? s.id : FirstItem.time),
-      "report-list-item-time",
+      "report-list-item-time"
     );
 
     Info.appendChild(Location);
@@ -103,13 +105,13 @@ async function report(t, retryCount = 0) {
         "規模",
         `<div class="report-list-item-magnitude ${variable.report.withoutNo}">${
           FirstItem.mag < 10 ? FirstItem.mag.toFixed(1) : FirstItem.mag
-        }</div>`,
+        }</div>`
       );
       const KM = CreatEle(
         "",
         "report-list-item-km",
         "深度",
-        `<div class="km">${FirstItem.depth}</div>`,
+        `<div class="km">${FirstItem.depth}</div>`
       );
 
       MagDepthWrapper.appendChild(Mag);
@@ -136,16 +138,16 @@ async function report(t, retryCount = 0) {
       });
       const IntItem = CreatEle(
         item.int,
-        `report-list-item-int intensity-${item.int}`,
+        `report-list-item-int intensity-${item.int}`
       );
       const InfoItem = CreatEle("", "report-list-item-info");
       const LocationItem = CreatEle(
         LocalReplace(item.loc),
-        "report-list-item-location",
+        "report-list-item-location"
       );
       const TimeItem = CreatEle(
         ReportTimeFormat(item.time),
-        "report-list-item-time",
+        "report-list-item-time"
       );
       const MagDepth = CreatEle(
         "",
@@ -153,7 +155,7 @@ async function report(t, retryCount = 0) {
         "規模",
         `<div class="report-list-item-magnitude ${
           variable.report.withoutNo
-        }">M ${item.mag < 10 ? item.mag.toFixed(1) : item.mag}</div>`,
+        }">M ${item.mag < 10 ? item.mag.toFixed(1) : item.mag}</div>`
       );
 
       InfoItem.appendChild(LocationItem);
@@ -231,12 +233,12 @@ function report_grouped(data) {
     const ReportListInt = CreatEle("", "report-list-int");
     const ReportIntensity = CreatEle(
       CityData.int,
-      `report-intensity intensity-${CityData.int}`,
+      `report-intensity intensity-${CityData.int}`
     );
     const ReportLoc = CreatEle(city, "report-location");
     const ReportArrowDown = CreatEle(
       "keyboard_arrow_down",
-      "report-arrow-down button-leading-icon material-symbols-rounded",
+      "report-arrow-down button-leading-icon material-symbols-rounded"
     );
 
     ReportListInt.appendChild(ReportIntensity);
@@ -273,7 +275,10 @@ function report_all(data) {
 
   Object.entries(data.list).forEach(([city, { int: cityIntensity }]) => {
     const reportItem = CreatEle("", "report-list-item");
-    const intensityDiv = CreatEle(cityIntensity, `report-intensity intensity-${cityIntensity}`);
+    const intensityDiv = CreatEle(
+      cityIntensity,
+      `report-intensity intensity-${cityIntensity}`
+    );
     const locationDiv = CreatEle(city, "report-location");
 
     reportItem.appendChild(intensityDiv);
@@ -287,8 +292,11 @@ function show_rts_list() {
   const len = _eew_list.length;
   opacity([ReportListBtn], len || rts_replay_time > 0 ? 0 : 1);
   RTS_List.classList.toggle("hidden", len == 0);
+  ReportListWrapper.classList.toggle("hidden", len);
   if (len > 0 || rts_replay_time > 0) {
-    const current_eew = variable.eew_list[_eew_list[last_map_count]] ? variable.eew_list[_eew_list[last_map_count]].data : "";
+    const current_eew = variable.eew_list[_eew_list[last_map_count]]
+      ? variable.eew_list[_eew_list[last_map_count]].data
+      : "";
     display([InfoBodyEQBox], current_eew.detail == 0 ? "" : "flex");
     display([InfoNSSPE], current_eew.detail == 0 ? "block" : "");
     opacity([SettingWrapper], 0);
@@ -297,7 +305,10 @@ function show_rts_list() {
     display([SettingWrapper], "none");
   } else {
     opacity([InfoBodyTitleBox, InfoBodyFooter], 0);
-    opacity([InfoBox, ReportListWrapper], window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : 1);
+    opacity(
+      [InfoBox, ReportListWrapper],
+      window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : 1
+    );
     InfoBox.style.backgroundColor = "#505050c7";
     InfoTitleBoxType.textContent = "暫無生效中的地震預警";
     InfoNo.textContent = "";
@@ -308,8 +319,7 @@ function show_rts_list() {
     InfoIntensity.textContent = "";
     const classList = InfoIntensity.classList;
     for (let i = classList.length - 1; i >= 0; i--)
-      if (classList[i].startsWith("intensity-"))
-        classList.remove(classList[i]);
+      if (classList[i].startsWith("intensity-")) classList.remove(classList[i]);
   }
 }
 
@@ -350,8 +360,7 @@ ReportItem.addEventListener("click", (event) => {
     dataset: { reportId: ReportID },
   } = event.target.closest(".report-list-item-index");
   const t = variable.report.data.find((ReportInt) => ReportInt.id == ReportID);
-  if (t)
-    ReportInfo(ReportID, t.int);
+  if (t) ReportInfo(ReportID, t.int);
 });
 
 // 地震報告詳細資訊各地震度下拉
@@ -360,24 +369,33 @@ document.addEventListener("click", (event) => {
   if (ReportListItem) {
     const wrapper = ReportListItem.closest(".report-list-item-wrapper");
     const ArrowSpan = ReportListItem.querySelector(".report-arrow-down");
-    ArrowSpan.textContent = ArrowSpan.textContent.trim() == "keyboard_arrow_up" ? "keyboard_arrow_down" : "keyboard_arrow_up";
+    ArrowSpan.textContent =
+      ArrowSpan.textContent.trim() == "keyboard_arrow_up"
+        ? "keyboard_arrow_down"
+        : "keyboard_arrow_up";
     wrapper.classList.toggle("active");
   }
 });
 
 // 重播
 ReportActionReplay.addEventListener("click", () => {
-  const data = variable.report.data.filter((index) => index.id == variable.report.more.id);
+  const data = variable.report.data.filter(
+    (index) => index.id == variable.report.more.id
+  );
   const originTime = new Date(data[0].time);
   rts_replay_time = originTime.getTime();
   opacity([ReportBoxWrapper], 0);
+  display([StopReplayWrapper], "flex");
 });
 
 // 報告頁面
 ReportActionOpen.addEventListener("click", () => {
   const id = variable.report.more.id.split("-");
   const filtered = id.filter((part, index) => index !== 1).join("-");
-  ipcRenderer.send("openUrl", `https://www.cwa.gov.tw/V8/C/E/EQ/EQ${filtered}.html`);
+  ipcRenderer.send(
+    "openUrl",
+    `https://www.cwa.gov.tw/V8/C/E/EQ/EQ${filtered}.html`
+  );
 });
 
 // 地震報告詳細資訊返回
@@ -386,3 +404,32 @@ ReportBackBtn.addEventListener("click", () => {
   setTimeout(() => display([ReportBoxWrapper], ""), 100);
   opacity([ReportListWrapper, InfoBox], 1);
 });
+
+StopReplayBtn.addEventListener("click", () => {
+  stop_replay();
+});
+
+function stop_replay() {
+  variable.focus.bounds.eew = L.latLngBounds();
+  variable.focus.status.eew = 1;
+  clearInterval(replay_timer);
+  rts_replay_time = 0;
+  variable.replay = 0;
+  variable.report.replay_data = {};
+
+  const keys = Object.keys(variable.eew_list);
+  keys.forEach((key) => {
+    console.log(key);
+    if (variable.eew_list[key].layer.s) variable.eew_list[key].layer.s.remove();
+    if (variable.eew_list[key].layer.s_fill)
+      variable.eew_list[key].layer.s_fill.remove();
+    if (variable.eew_list[key].layer.p) variable.eew_list[key].layer.p.remove();
+    variable.eew_list[key].layer.epicenterIcon.remove();
+    variable.intensity_geojson.remove();
+    variable.last_map_update = 0;
+    delete variable.eew_list[key];
+  });
+  realtime_list.innerHTML = "";
+  variable.map.setView([23.6, 120.4], 7.8);
+  display([StopReplayWrapper], "none");
+}

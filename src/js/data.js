@@ -22,6 +22,10 @@ setInterval(() => {
   ntp();
 }, 60000);
 
+setInterval(() => {
+  checkForNewRelease();
+}, 3_600_000);
+
 function read_replay_file() {
   if (!variable.replay_list.length) {
     variable.replay = 0;
@@ -36,7 +40,7 @@ function read_replay_file() {
     const data = JSON.parse(
       fs
         .readFileSync(path.join(app.getPath("userData"), `replay/${name}`))
-        .toString(),
+        .toString()
     );
 
     const alert = Object.keys(data.rts.box).length;
@@ -82,7 +86,7 @@ async function realtime_eew() {
 
 async function ntp() {
   const res = await fetchData(
-    `https://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/ntp`,
+    `https://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/ntp`
   );
   const data = await res.text();
   variable.time_offset = Number(data) - Date.now();
@@ -92,14 +96,15 @@ let rts_replay_time = 0;
 
 setInterval(() => {
   try {
-    if (!rts_replay_time)
-      return;
+    if (!rts_replay_time) return;
 
     rts_replay_time += 1000;
     const ts = Math.round(rts_replay_time / 1000) * 1000;
     const controller = new AbortController();
     setTimeout(() => controller.abort(), 2500);
-    fetch(`https://api-2.exptech.dev/api/v1/trem/rts/${ts}`, { signal: controller.signal })
+    fetch(`https://api-2.exptech.dev/api/v1/trem/rts/${ts}`, {
+      signal: controller.signal,
+    })
       .then(async (ans) => {
         ans = await ans.json();
         variable.report.replay_data = ans;
@@ -108,11 +113,12 @@ setInterval(() => {
         console.log("rts", err);
       });
 
-    fetch(`https://api-2.exptech.dev/api/v1/eq/eew/${ts}`, { signal: controller.signal })
+    fetch(`https://api-2.exptech.dev/api/v1/eq/eew/${ts}`, {
+      signal: controller.signal,
+    })
       .then(async (ans_eew) => {
         ans_eew = await ans_eew.json();
-        for (const eew of ans_eew)
-          variable.report.replay_data.eew = eew;
+        for (const eew of ans_eew) variable.report.replay_data.eew = eew;
       })
       .catch((err) => {
         console.log("eew", err);
