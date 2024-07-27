@@ -18,7 +18,8 @@ setting:
     lat: 23.9732551
     lon: 121.6068999
   user-checkbox:
-    early-warning-CWA: 1
+    early-warning-TREM: 1
+    early-warning-CWA: 0
     early-warning-JMA: 1
     early-warning-NIED: 1
     early-warning-KMA: 1
@@ -27,7 +28,6 @@ setting:
     show-window-report: 1
     show-window-detect: 1
     show-window-realtime-int: 1
-    tremeew-take: 0
     other-auto-start: 1
     other-voice: 1
     graphics-block-auto-zoom: 1

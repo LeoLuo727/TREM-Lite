@@ -6,7 +6,6 @@ setInterval(() => {
   const _eew_list = Object.keys(variable.eew_list);
 
   if (!_eew_list.length) return;
-
   if (draw_lock) return;
   draw_lock = true;
   variable.focus.bounds.eew = L.latLngBounds();
@@ -105,7 +104,6 @@ setInterval(() => {
   variable.last_map_update = now_local_time;
   last_map_count++;
   if (last_map_count >= _eew_list.length) last_map_count = 0;
-
   const data = variable.eew_list[_eew_list[last_map_count]].data;
   if (
     !variable.focus.status.intensity &&
@@ -172,7 +170,6 @@ setInterval(() => {
           .addTo(variable.map);
     }
   }
-  console.log(data);
   $("#info-depth").textContent = data.eq.depth;
   $("#info-no").textContent = `第${data.serial}報${data.final ? "(最終)" : ""}`;
   $("#info-loc").textContent = data.eq.loc;

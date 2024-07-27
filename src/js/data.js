@@ -47,6 +47,7 @@ function read_replay_file() {
     show_rts_dot(data.rts, alert);
     if (alert) show_rts_box(data.rts.box);
 
+    console.log(data.eew);
     for (const eew of data.eew) {
       eew.time = data.rts.time;
       eew.timestamp = now();
@@ -64,8 +65,6 @@ async function realtime_rts() {
   if (rts_replay_time > 0) return;
   const res = await fetchData(`${LB_url()}v1/trem/rts`);
   const data = await res.json();
-  // console.log(data);
-
   const alert = Object.keys(data.box).length;
   show_rts_dot(data, alert);
   if (alert) show_rts_box(data.box);
@@ -120,6 +119,7 @@ setInterval(() => {
     const controller = new AbortController();
     const { signal } = controller;
     setTimeout(() => controller.abort(), 2500);
+
     fetchWithFallback(
       `https://api-2.exptech.dev/api/v1/trem/rts/${ts}`,
       `https://api-1.exptech.dev/api/v1/trem/rts/${ts}`,
@@ -134,22 +134,34 @@ setInterval(() => {
       { signal }
     ).then((ans_eew) => {
       if (ans_eew) {
-        for (const eew of ans_eew) variable.report.replay_data.eew = eew;
+        variable.report.replay_data.eew = ans_eew;
       }
     });
-
     if (!variable.report.replay_data.box) return;
-    const alert = Object.keys(variable.report.replay_data.box).length;
-    if (alert) show_rts_box(variable.report.replay_data.box);
-
-    if (variable.report.replay_data.eew) {
-      show_rts_dot(variable.report.replay_data, alert);
-      variable.report.replay_data.eew.timestamp = now();
-      show_eew(variable.report.replay_data.eew);
+    const rp_data = variable.report.replay_data;
+    variable.replay = rp_data.time;
+    if (early(rp_data)) return;
+    const alert = Object.keys(rp_data.box).length;
+    if (alert) show_rts_box(rp_data.box);
+    if (rp_data.eew) {
+      show_rts_dot(rp_data, alert);
+      for (const eew of rp_data.eew) {
+        eew.time = rp_data.time;
+        eew.timestamp = now();
+        show_eew(eew);
+      }
     }
-
-    variable.replay = variable.report.replay_data.time;
   } catch (err) {
     console.log(err);
   }
 }, 1000);
+
+function early(data) {
+  if (data.eew) {
+    return data.eew.every((eew) => {
+      const authorKey = `early-warning-${eew.author.toUpperCase()}`;
+      return checkbox(authorKey) !== 1 && checkbox("tremeew-take") !== 1;
+    });
+  }
+  return false;
+}
