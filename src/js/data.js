@@ -94,35 +94,49 @@ async function ntp() {
 
 let rts_replay_time = 0;
 
+const fetchWithFallback = async (url, fallbackUrl, options = {}) => {
+  try {
+    const response = await fetch(url, options);
+    if (response.ok) return response.json();
+    if (response.status === 404) {
+      const fallbackResponse = await fetch(fallbackUrl, options);
+      if (fallbackResponse.ok) return fallbackResponse.json();
+      throw new Error(
+        `Fallback request failed with status ${fallbackResponse.status}`
+      );
+    }
+    throw new Error(`Request failed with status ${response.status}`);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 setInterval(() => {
   try {
     if (!rts_replay_time) return;
-
     rts_replay_time += 1000;
     const ts = Math.round(rts_replay_time / 1000) * 1000;
     const controller = new AbortController();
+    const { signal } = controller;
     setTimeout(() => controller.abort(), 2500);
-    fetch(`https://api-2.exptech.dev/api/v1/trem/rts/${ts}`, {
-      signal: controller.signal,
-    })
-      .then(async (ans) => {
-        ans = await ans.json();
-        variable.report.replay_data = ans;
-      })
-      .catch((err) => {
-        console.log("rts", err);
-      });
+    fetchWithFallback(
+      `https://api-2.exptech.dev/api/v1/trem/rts/${ts}`,
+      `https://api-1.exptech.dev/api/v1/trem/rts/${ts}`,
+      { signal }
+    ).then((ans) => {
+      if (ans) variable.report.replay_data = ans;
+    });
 
-    fetch(`https://api-2.exptech.dev/api/v1/eq/eew/${ts}`, {
-      signal: controller.signal,
-    })
-      .then(async (ans_eew) => {
-        ans_eew = await ans_eew.json();
+    fetchWithFallback(
+      `https://api-2.exptech.dev/api/v1/eq/eew/${ts}`,
+      `https://api-1.exptech.dev/api/v1/eq/eew/${ts}`,
+      { signal }
+    ).then((ans_eew) => {
+      if (ans_eew) {
         for (const eew of ans_eew) variable.report.replay_data.eew = eew;
-      })
-      .catch((err) => {
-        console.log("eew", err);
-      });
+      }
+    });
 
     if (!variable.report.replay_data.box) return;
     const alert = Object.keys(variable.report.replay_data.box).length;
@@ -138,4 +152,4 @@ setInterval(() => {
   } catch (err) {
     console.log(err);
   }
-}, 1_000);
+}, 1000);

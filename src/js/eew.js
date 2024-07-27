@@ -19,6 +19,7 @@ setInterval(() => {
       rts_replay_time = 0;
       variable.replay = 0;
       variable.report.replay_data = {};
+      variable.report.survey = null;
       variable.map.setView([23.6, 120.4], 7.8);
 
       if (variable.eew_list[data.id].layer.s)

@@ -292,7 +292,6 @@ function show_rts_list() {
   const len = _eew_list.length;
   opacity([ReportListBtn], len || rts_replay_time > 0 ? 0 : 1);
   RTS_List.classList.toggle("hidden", len == 0);
-  ReportListWrapper.classList.toggle("hidden", len);
   if (len > 0 || rts_replay_time > 0) {
     const current_eew = variable.eew_list[_eew_list[last_map_count]]
       ? variable.eew_list[_eew_list[last_map_count]].data
@@ -303,6 +302,7 @@ function show_rts_list() {
     opacity([InfoBox, InfoBodyTitleBox, InfoBodyFooter], 1);
     display([ReportBoxWrapper], "none");
     display([SettingWrapper], "none");
+    ReportListWrapper.classList.add("hidden");
   } else {
     opacity([InfoBodyTitleBox, InfoBodyFooter], 0);
     opacity(
@@ -416,6 +416,7 @@ function stop_replay() {
   rts_replay_time = 0;
   variable.replay = 0;
   variable.report.replay_data = {};
+  variable.report.survey = null;
 
   const keys = Object.keys(variable.eew_list);
   keys.forEach((key) => {

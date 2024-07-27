@@ -566,7 +566,6 @@ async function logout(token) {
 
 // 登入-取得使用者資訊
 async function getUserInfo(token, retryCount = 0) {
-  console.log(token);
   try {
     const response = await fetch(`${url}info`, {
       method: "GET",
