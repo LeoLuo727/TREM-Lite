@@ -420,13 +420,12 @@ function stop_replay() {
 
   const keys = Object.keys(variable.eew_list);
   keys.forEach((key) => {
-    console.log(key);
     if (variable.eew_list[key].layer.s) variable.eew_list[key].layer.s.remove();
     if (variable.eew_list[key].layer.s_fill)
       variable.eew_list[key].layer.s_fill.remove();
     if (variable.eew_list[key].layer.p) variable.eew_list[key].layer.p.remove();
     variable.eew_list[key].layer.epicenterIcon.remove();
-    variable.intensity_geojson.remove();
+    if (variable.intensity_geojson) variable.intensity_geojson.remove();
     variable.last_map_update = 0;
     delete variable.eew_list[key];
   });

@@ -32,6 +32,7 @@
 // });
 
 function show_intensity(data) {
+  if (early(data)) return;
   if (
     !variable.intensity_list[data.id] ||
     variable.intensity_list[data.id].data.serial < data.serial

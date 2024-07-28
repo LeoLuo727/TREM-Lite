@@ -47,7 +47,6 @@ function read_replay_file() {
     show_rts_dot(data.rts, alert);
     if (alert) show_rts_box(data.rts.box);
 
-    console.log(data.eew);
     for (const eew of data.eew) {
       eew.time = data.rts.time;
       eew.timestamp = now();
@@ -140,7 +139,6 @@ setInterval(() => {
     if (!variable.report.replay_data.box) return;
     const rp_data = variable.report.replay_data;
     variable.replay = rp_data.time;
-    if (early(rp_data)) return;
     const alert = Object.keys(rp_data.box).length;
     if (alert) show_rts_box(rp_data.box);
     if (rp_data.eew) {
@@ -157,11 +155,9 @@ setInterval(() => {
 }, 1000);
 
 function early(data) {
-  if (data.eew) {
-    return data.eew.every((eew) => {
-      const authorKey = `early-warning-${eew.author.toUpperCase()}`;
-      return checkbox(authorKey) !== 1 && checkbox("tremeew-take") !== 1;
-    });
+  if (data && data.author) {
+    const authorKey = `early-warning-${data.author.toUpperCase()}`;
+    return checkbox(authorKey) !== 1;
   }
   return false;
 }

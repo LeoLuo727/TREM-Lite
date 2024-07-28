@@ -491,6 +491,7 @@ function LogoutSuccess() {
   display([LogoutBtn]);
   display([LoginBtn], "flex");
   act.textContent = "尚未登入";
+  vip_time.textContent = "";
   localStorage.removeItem("user-key", "");
   LoginBtn.dispatchEvent(clickEvent);
 }

@@ -29,6 +29,7 @@ function get_station_info() {
 function show_rts_box(_colors) {
   const _colors_ = {};
   const _eew_list = Object.keys(variable.eew_list);
+  if (!_eew_list.length) return;
   variable.focus.bounds.rts = L.latLngBounds();
   Object.keys(_colors).forEach((key) => {
     let passed = false;
@@ -87,8 +88,12 @@ function show_rts_box(_colors) {
 
 function show_rts_dot(data, alert) {
   if (!variable.station_info) return;
+  if (data.eew) {
+    const _eew_list = Object.keys(variable.eew_list);
+    if (!_eew_list.length) return;
+  }
 
-  if (!alert)
+  if (!alert) {
     variable.audio = {
       shindo: -1,
       pga: -1,
@@ -103,7 +108,7 @@ function show_rts_dot(data, alert) {
         shindo_2: 0,
       },
     };
-  else {
+  } else {
     realtime_list.innerHTML = "";
 
     for (const area of data.int) {

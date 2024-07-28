@@ -98,7 +98,6 @@ setInterval(() => {
 setInterval(() => {
   const _eew_list = Object.keys(variable.eew_list);
   if (!_eew_list.length) return;
-
   const now_local_time = Date.now();
   if (now_local_time - variable.last_map_update < 10000) return;
   variable.last_map_update = now_local_time;
@@ -217,6 +216,7 @@ setInterval(() => {
 
 function show_eew(data) {
   const id_str = `${data.id}-${data.serial}-${data.status == 3 ? 1 : 0}`;
+  if (early(data)) return;
   if (variable.time_cache_list.includes(id_str)) return;
   variable.time_cache_list.push(id_str);
   const now_time = data.time + (now() - data.timestamp);
