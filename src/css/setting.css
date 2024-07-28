@@ -687,16 +687,18 @@ li {
   }
 }
 
-.login_msg.shake {
-  animation: shake 0.2s ease;
-}
+.login-form-input {
+  .shake {
+    animation: shake 0.2s ease;
+  }
 
-.login_msg.error {
-  color: #ff7373;
-}
+  .error {
+    color: #ff7373;
+  }
 
-.login_msg.success {
-  color: #73ff96;
+  .success {
+    color: #73ff96;
+  }
 }
 
 ::-webkit-input-placeholder {

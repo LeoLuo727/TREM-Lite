@@ -10,6 +10,7 @@ const ResetConfirmWrapper = $(".reset-confirm-wrapper");
 const ResetCancel = $(".reset-cancel");
 const ResetSure = $(".reset-sure");
 const LoginBtn = $(".login-btn");
+const Forget = $("#forget");
 
 const LocationWrapper = $(".usr-location");
 const Location = LocationWrapper.querySelector(".location");
@@ -64,42 +65,44 @@ ls_init();
 // 左側選單按鈕點擊
 querySelectorAll(".setting-buttons .button").forEach((button) => {
   button.addEventListener("click", () => {
-    querySelectorAll(".setting-options-page").forEach((page) =>
-      page.classList.remove("active")
-    );
-    querySelector(`.${button.getAttribute("for")}`).classList.add("active");
+    const targetPage = querySelector(`.${button.getAttribute("for")}`);
 
-    querySelectorAll(".setting-buttons .button").forEach((btn) =>
-      btn.classList.remove("on")
-    );
+    document
+      .querySelectorAll(".setting-options-page")
+      .forEach((page) => page.classList.remove("active"));
+    targetPage.classList.add("active");
+
+    document
+      .querySelectorAll(".setting-buttons .button")
+      .forEach((btn) => btn.classList.remove("on"));
     button.classList.add("on");
   });
 });
 
 // 重置按鈕點擊事件
-ResetBtn.addEventListener("click", () => {
+ResetBtn.onclick = () => {
   ResetConfirmWrapper.style.bottom = "0";
-});
+};
 
-addEventListener("click", (event) => {
+document.onclick = (event) => {
   const target = event.target;
   if (!ResetConfirmWrapper.contains(target) && !ResetBtn.contains(target))
     ResetConfirmWrapper.style.bottom = "-100%";
-});
+};
 
 // 確定重置按鈕點擊事件
-ResetSure.addEventListener("click", () => {
+ResetSure.onclick = () => {
   ls_init();
   ResetConfirmWrapper.style.bottom = "-100%";
-});
+};
 
 // 取消重置按鈕點擊事件
-ResetCancel.addEventListener("click", () => {
+ResetCancel.onclick = () => {
   ResetConfirmWrapper.style.bottom = "-100%";
-});
+};
 
 // 設定按鈕點擊事件
-SettingBtn.addEventListener("click", () => {
+SettingBtn.onclick = () => {
   const _eew_list = Object.keys(variable.eew_list);
   if (_eew_list.length) return;
 
@@ -107,25 +110,25 @@ SettingBtn.addEventListener("click", () => {
   requestAnimationFrame(() => {
     opacity([SettingWrapper], 1);
   });
-});
+};
 
 // 返回按鈕點擊事件
-Back.addEventListener("click", () => {
+Back.onclick = () => {
   display([SettingWrapper]);
   requestAnimationFrame(() => {
     opacity([SettingWrapper], 0);
   });
-});
+};
 
 // 所在地-下拉選單點擊事件
-Location.addEventListener("click", function () {
+Location.onclick = function () {
   const ArrowSpan = this.querySelector(".selected-btn");
   ArrowSpan.textContent =
     ArrowSpan.textContent.trim() == "keyboard_arrow_up"
       ? "keyboard_arrow_down"
       : "keyboard_arrow_up";
   LocationSelWrapper.classList.toggle("select-show-big");
-});
+};
 
 // 所在地-點擊選項事件
 const addLocationSelectEvent = (
@@ -135,16 +138,15 @@ const addLocationSelectEvent = (
 ) => {
   [localItemsContainer, cityItemsContainer].forEach((container) => {
     container.addEventListener("click", (event) => {
-      const closestDiv = event.target.closest(
+      const selectedDiv = event.target.closest(
         ".usr-location .select-items > div"
       );
-      if (closestDiv) {
-        const selectedOption = closestDiv.textContent;
-        selectElement.textContent = selectedOption;
+      if (selectedDiv) {
+        selectElement.textContent = selectedDiv.textContent;
         container
           .querySelectorAll("div")
           .forEach((div) => div.classList.remove("select-option-selected"));
-        closestDiv.classList.add("select-option-selected");
+        selectedDiv.classList.add("select-option-selected");
       }
     });
   });
@@ -161,7 +163,7 @@ Object.keys(constant.REGION).forEach((city) => {
 });
 
 // 所在地-local選單點擊事件
-localItems.addEventListener("click", (event) => {
+localItems.onclick = (event) => {
   const closestDiv = event.target.closest(".usr-location .select-items > div");
   if (closestDiv) {
     updateLocationSelectItems(
@@ -170,10 +172,10 @@ localItems.addEventListener("click", (event) => {
     );
     updateLocationSelectItems(TownItems, []);
   }
-});
+};
 
 // 所在地-city選單點擊事件
-CityItems.addEventListener("click", (event) => {
+CityItems.onclick = (event) => {
   const closestDiv = event.target.closest(".usr-location .select-items > div");
   if (closestDiv) {
     CitySel.textContent = closestDiv.textContent;
@@ -182,44 +184,33 @@ CityItems.addEventListener("click", (event) => {
       constant.SETTING.SPECIAL_LOCAL[closestDiv.textContent] || []
     );
   }
-});
+};
 
 // 所在地-town選單點擊事件
-TownItems.addEventListener("click", (event) => {
+TownItems.onclick = (event) => {
   const closestDiv = event.target.closest(".usr-location .select-items > div");
   if (closestDiv) {
-    let usrLocalStation = [];
-    TownSel.textContent = closestDiv.textContent;
-    querySelector(".current-city").textContent = CitySel.textContent;
-    querySelector(".current-town").textContent = closestDiv.textContent;
+    const city = CitySel.textContent;
+    const town = closestDiv.textContent;
+    const location =
+      city !== "南陽州市" && city !== "重慶市"
+        ? constant.REGION[city][town]
+        : null;
 
-    if (
-      CitySel.textContent !== "南陽州市" &&
-      CitySel.textContent !== "重慶市"
-    ) {
-      const usr_location_info =
-        constant.REGION[CitySel.textContent][closestDiv.textContent];
-      usrLocalStation = NearStation(
-        usr_location_info.lat,
-        usr_location_info.lon
-      );
-    } else
-      usrLocalStation = findStationByLocation(
-        CitySel.textContent,
-        closestDiv.textContent
-      );
+    const usrLocalStation = location
+      ? NearStation(location.lat, location.lon)
+      : findStationByLocation(city, town);
 
+    querySelector(".current-city").textContent = city;
+    querySelector(".current-town").textContent = town;
     querySelector(
       ".current-station"
     ).textContent = `${usrLocalStation.net} ${usrLocalStation.code}-${usrLocalStation.name} ${usrLocalStation.loc}`;
-    SaveSelectedLocationToStorage(
-      CitySel.textContent,
-      closestDiv.textContent,
-      JSON.stringify(usrLocalStation)
-    );
+
+    SaveSelectedLocationToConfig(city, town, JSON.stringify(usrLocalStation));
     usr_location();
   }
-});
+};
 
 function findStationByLocation(city, town) {
   const location = `${city}${town}`;
@@ -248,18 +239,11 @@ function NearStation(la, lo) {
 addLocationSelectEvent(localItems, CityItems, CitySel);
 addLocationSelectEvent(localItems, TownItems, TownSel);
 
-// 所在地-儲存user選擇的city和town到storage
-const SaveSelectedLocationToStorage = (city, town, station) => {
-  if (city !== "重慶市" && city !== "南陽州市") {
-    const coordinate = constant.REGION[city][town];
-
-    const locationData = {
-      city,
-      town,
-      lat: coordinate.lat,
-      lon: coordinate.lon,
-    };
-    config.setting["location"] = locationData;
+// 所在地-儲存user選擇的city和town到Config
+const SaveSelectedLocationToConfig = (city, town, station) => {
+  if (!["重慶市", "南陽州市"].includes(city)) {
+    const { lat, lon } = constant.REGION[city][town];
+    config.setting["location"] = { city, town, lat, lon };
     config.setting["station"] = JSON.parse(station);
     WriteConfig(config);
   }
@@ -289,22 +273,23 @@ async function realtimeStation() {
 
 // 即時測站-處理測站數據
 function processStationData(data) {
-  Object.keys(data).forEach((station) => {
-    const info = data[station].info[data[station].info.length - 1];
+  Object.entries(data).forEach(([station, { info }]) => {
+    const latestInfo = info.at(-1);
     const loc =
-      region_code_to_string(constant.REGION, info.code) ||
+      region_code_to_string(constant.REGION, latestInfo.code) ||
       getFallbackLocation(station);
 
-    if (loc.city && !constant.SETTING.STATION_REGION.includes(loc.city))
+    if (loc.city && !constant.SETTING.STATION_REGION.includes(loc.city)) {
       constant.SETTING.STATION_REGION.push(loc.city);
+    }
 
     variable.setting.station.push({
       name: station,
       net: data[station].net,
       loc: loc.city ? `${loc.city}${loc.town}` : loc,
-      code: info.code,
-      lat: info.lat,
-      lon: info.lon,
+      code: latestInfo.code,
+      lat: latestInfo.lat,
+      lon: latestInfo.lon,
     });
   });
 }
@@ -318,22 +303,17 @@ function getFallbackLocation(station) {
 function RenderStationReg() {
   StationLocalItems.innerHTML = "";
 
-  const uniqueRegions = [
-    ...new Set(
-      constant.SETTING.STATION_REGION.map((city) => city.slice(0, -1))
-    ),
-  ];
+  const uniqueRegions = Array.from(
+    new Set(constant.SETTING.STATION_REGION.map((city) => city.slice(0, -1)))
+  ).sort();
 
-  const sortedRegion = uniqueRegions.sort();
-
-  sortedRegion.forEach((city) => {
-    const cityDiv = CreatEle(city);
-    StationLocalItems.appendChild(cityDiv);
+  uniqueRegions.forEach((city) => {
+    StationLocalItems.appendChild(CreatEle(city));
   });
 }
 
 // 即時測站-點擊縣市選項事件
-StationLocalItems.addEventListener("click", handleCityItemClick);
+StationLocalItems.onclick = handleCityItemClick;
 
 function handleCityItemClick(event) {
   const target = event.target.closest(".realtime-station .select-items > div");
@@ -382,22 +362,18 @@ function renderFilteredStations(stations) {
 }
 
 // 即時測站-下拉選單點擊事件
-StationLocation.addEventListener("click", handleLocationClick);
-
-function handleLocationClick() {
-  const ArrowSpan = this.querySelector(".selected-btn");
+StationLocation.onclick = () => {
+  const ArrowSpan = StationLocation.querySelector(".selected-btn");
   ArrowSpan.textContent =
-    ArrowSpan.textContent.trim() == "keyboard_arrow_up"
+    ArrowSpan.textContent.trim() === "keyboard_arrow_up"
       ? "keyboard_arrow_down"
       : "keyboard_arrow_up";
   StationSelWrapper.classList.toggle("select-show-big");
-}
+};
 
 // 即時測站-點擊測站選項事件
-StationSelEvent(StationItems);
-
 function StationSelEvent(itemsContainer) {
-  itemsContainer.addEventListener("click", (event) => {
+  itemsContainer.onclick = (event) => {
     const closestDiv = event.target.closest(
       ".realtime-station .select-items > div"
     );
@@ -406,130 +382,82 @@ function StationSelEvent(itemsContainer) {
         .querySelectorAll("div")
         .forEach((div) => div.classList.remove("select-option-selected"));
       closestDiv.classList.add("select-option-selected");
-      const regex = /^(MS-Net|SE-Net)(\d+-\d+.*)$/;
-      const match = closestDiv.textContent.match(regex);
-      if (match) {
-        StationSel.textContent = `${match[1]} ${match[2]}`;
-        querySelector(
-          ".current-station"
-        ).textContent = `${match[1]} ${match[2]}`;
-        const stationData = Object.fromEntries(
-          ["net", "code", "name", "loc", "lat", "lon"].map((attr) => [
-            attr,
-            closestDiv.getAttribute(`data-${attr}`),
-          ])
-        );
 
+      const [match, net, details] =
+        closestDiv.textContent.match(/^(MS-Net|SE-Net)(\d+-\d+.*)$/) || [];
+      if (match) {
+        const formattedText = `${net} ${details}`;
+        StationSel.textContent = formattedText;
+        querySelector(".current-station").textContent = formattedText;
+        const stationData = ["net", "code", "name", "loc", "lat", "lon"].reduce(
+          (acc, attr) => {
+            acc[attr] = closestDiv.getAttribute(`data-${attr}`);
+            return acc;
+          },
+          {}
+        );
         config.setting["station"] = stationData;
         WriteConfig(config);
       }
     }
-  });
+  };
 }
+StationSelEvent(StationItems);
 
-const LoginFormContent = $(".login-forms-content");
-const AccountInfoContent = $(".usr-account-info-content");
-const act = $(".account");
-const vip_time = $(".vip_time");
-const LogoutBtn = $(".logout-btn");
-const LoginBack = $(".login-back");
+const elements = {
+  LoginFormContent: $(".login-forms-content"),
+  AccountInfoContent: $(".usr-account-info-content"),
+  act: $(".account"),
+  vip_time: $(".vip_time"),
+  LoginBtn: $(".login-btn"),
+  LogoutBtn: $(".logout-btn"),
+  LoginBack: $(".login-back"),
+  FormLogin: $("#form-login"),
+  FormEmail: $("#email"),
+  FormPassword: $("#password"),
+  LoginMsg: $(".login_msg"),
+  url: "https://api-1.exptech.com.tw/api/v3/et/",
+};
 
-const FormLogin = $("#form-login");
-const FormEmail = $("#email");
-const FormPassword = $("#password");
-const LoginMsg = $(".login_msg");
-const url = "https://api-1.exptech.com.tw/api/v3/et/";
-
-// 登入-切換登入表單和帳號資訊
 function toggleForms(isLogin) {
-  display([LoginFormContent], isLogin ? "grid" : "none");
-  display([AccountInfoContent], isLogin ? "none" : "flex");
-}
-
-// 登入-跳轉到登入表單
-LoginBtn.addEventListener("click", () => {
-  toggleForms(1);
+  display([elements.LoginFormContent], isLogin ? "grid" : "none");
+  display([elements.AccountInfoContent], isLogin ? "none" : "flex");
   requestAnimationFrame(() => {
-    LoginFormContent.classList.add("show-login-form");
-    AccountInfoContent.classList.remove("show-account-info");
+    elements.LoginFormContent.classList.toggle("show-login-form", isLogin);
+    elements.AccountInfoContent.classList.toggle("show-account-info", !isLogin);
   });
-});
-
-// 登入-返回登入首頁/帳號資訊
-LoginBack.addEventListener("click", () => {
-  toggleForms(0);
-  requestAnimationFrame(() => {
-    AccountInfoContent.classList.add("show-account-info");
-    LoginFormContent.classList.remove("show-login-form");
-  });
-});
-
-// 登入-表單登入按鈕
-FormLogin.addEventListener("click", async () => {
-  const email = FormEmail.value;
-  const password = FormPassword.value;
-  await login(email, password);
-});
-
-// 登入-表單登出按鈕
-LogoutBtn.addEventListener("click", async () => {
-  const token = config.setting["user-key"];
-  await logout(token);
-});
-
-// 登入-登入成功畫面
-function LoginSuccess(msg) {
-  display([LoginBtn]);
-  display([LogoutBtn], "flex");
-  act.textContent = `Welcome,${msg ? "VIP" : "User"}`;
-  vip_time.textContent = msg.vip > 0 ? formatTime(msg.vip) : "";
-  LoginBack.dispatchEvent(clickEvent);
 }
 
-// 登入-登出成功畫面
-function LogoutSuccess() {
-  display([LogoutBtn]);
-  display([LoginBtn], "flex");
-  act.textContent = "尚未登入";
-  vip_time.textContent = "";
-  localStorage.removeItem("user-key", "");
-  LoginBtn.dispatchEvent(clickEvent);
-}
+elements.LoginBtn.onclick = () => toggleForms(true);
+elements.LoginBack.onclick = () => toggleForms(false);
 
-// 登入-登入/登出相關功能
 async function handleUserAction(endpoint, options) {
   try {
-    const response = await fetch(`${url}${endpoint}`, options);
+    const response = await fetch(`${elements.url}${endpoint}`, options);
     const responseData = await response.text();
-
     const isSuccess = response.ok;
-    LoginMsg.classList.remove("success", "error", "shake");
-    LoginMsg.classList.add(isSuccess ? "success" : "error");
+    const action = options.method === "POST" ? "登入" : "登出";
+
+    elements.LoginMsg.className = isSuccess ? "success" : "error";
+    elements.LoginMsg.textContent = isSuccess
+      ? `${action}成功！`
+      : response.status === 400 || response.status === 401
+      ? "帳號或密碼錯誤！"
+      : `伺服器異常(error ${response.status})`;
 
     if (isSuccess) {
-      LoginMsg.textContent = `${
-        options.method == "POST" ? "登入" : "登出"
-      }成功！`;
-
-      const data = { login: responseData };
-      config.setting.login = data.login == "OK" ? "" : data.login || "";
+      config.setting.login = responseData === "OK" ? "" : responseData || "";
       WriteConfig(config);
-
-      if (endpoint == "login") LoginSuccess(await getUserInfo(responseData));
-      if (endpoint == "logout") LogoutSuccess();
-    } else if (response.status == 400 || response.status == 401) {
-      LoginMsg.textContent = "帳號或密碼錯誤！";
-      LoginMsg.classList.add("shake");
+      endpoint === "login"
+        ? LoginSuccess(await getUserInfo(responseData))
+        : LogoutSuccess();
     } else {
-      LoginMsg.textContent = `伺服器異常(error ${response.status})`;
-      LoginMsg.classList.add("shake");
+      elements.LoginMsg.classList.add("shake");
     }
 
-    LoginMsg.addEventListener(
+    elements.LoginMsg.addEventListener(
       "animationend",
-      () => {
-        LoginMsg.classList.remove("shake");
-      },
+      () => elements.LoginMsg.classList.remove("shake"),
       { once: true }
     );
   } catch (error) {
@@ -537,38 +465,37 @@ async function handleUserAction(endpoint, options) {
   }
 }
 
-// 登入-表單登入
 async function login(email, password) {
-  const ver = app.getVersion().split("-")[1];
-  const requestBody = {
-    email,
-    pass: password,
-    name: `/TREM-Lite/${ver}/${os.release()}`,
-  };
-  const options = {
+  await handleUserAction("login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
-  };
-  await handleUserAction("login", options);
+    body: JSON.stringify({
+      email,
+      pass: password,
+      name: `/TREM-Lite/${app.getVersion().split("-")[1]}/${os.release()}`,
+    }),
+  });
 }
 
-// 登入-表單登出
 async function logout(token) {
-  const options = {
+  await handleUserAction("logout", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Basic ${token}`,
     },
-  };
-  await handleUserAction("logout", options);
+  });
 }
 
-// 登入-取得使用者資訊
+elements.LogoutBtn.onclick = () => logout(config.setting["user-key"]);
+elements.FormLogin.onclick = async () =>
+  login(elements.FormEmail.value, elements.FormPassword.value);
+Forget.onclick = () =>
+  ipcRenderer.send("openUrl", "https://exptech.com.tw/forgot");
+
 async function getUserInfo(token, retryCount = 0) {
   try {
-    const response = await fetch(`${url}info`, {
+    const response = await fetch(`${elements.url}info`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -576,14 +503,30 @@ async function getUserInfo(token, retryCount = 0) {
       },
     });
     if (response.ok) return await response.json();
-    else throw new Error(`伺服器異常(error ${response.status})`);
+    throw new Error(`伺服器異常(error ${response.status})`);
   } catch (error) {
     if (retryCount < variable.report.list_retry) {
       logger.error(`[Fetch] ${error} (Try #${retryCount})`);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      await getUserInfo(token, retryCount + 1);
+      return getUserInfo(token, retryCount + 1);
     }
   }
+}
+
+function LoginSuccess(msg) {
+  display([elements.LoginBtn]);
+  display([elements.LogoutBtn], "flex");
+  elements.act.textContent = `Welcome,${msg ? "VIP" : "User"}`;
+  elements.vip_time.textContent = msg.vip > 0 ? formatTime(msg.vip) : "";
+  elements.LoginBack.dispatchEvent(clickEvent);
+}
+
+function LogoutSuccess() {
+  display([elements.LogoutBtn]);
+  display([elements.LoginBtn], "flex");
+  elements.act.textContent = "尚未登入";
+  elements.vip_time.textContent = "";
+  elements.LoginBtn.dispatchEvent(clickEvent);
 }
 
 const clickEvent = new MouseEvent("click", {
@@ -594,168 +537,151 @@ const clickEvent = new MouseEvent("click", {
 
 // 預警條件
 function initializeSel(type, location, showInt, selectWrapper, items) {
-  location.addEventListener("click", () => {
+  location.onclick = () => {
     const ArrowSpan = location.querySelector(".selected-btn");
     ArrowSpan.textContent =
-      ArrowSpan.textContent.trim() == "keyboard_arrow_up"
+      ArrowSpan.textContent.trim() === "keyboard_arrow_up"
         ? "keyboard_arrow_down"
         : "keyboard_arrow_up";
     selectWrapper.classList.toggle("select-show-big");
-  });
+  };
 
-  items.addEventListener("click", (event) => {
+  items.onclick = (event) => {
     const target = event.target.closest(".select-items > div");
     if (target) {
       items
         .querySelectorAll("div")
         .forEach((div) => div.classList.remove("select-option-selected"));
       target.classList.add("select-option-selected");
-
-      const selected = target.textContent;
-      showInt.textContent = selected;
-
-      updateLocalStorage(type.className, selected);
+      showInt.textContent = target.textContent;
+      updateConfig(type.className, target.textContent);
     }
-  });
+  };
 }
 
-function updateLocalStorage(typeClassName, selectedValue) {
-  const data = config.setting["warning"] || {};
+// Update local Config
+function updateConfig(typeClassName, selectedValue) {
   const key = typeClassName.includes("warning-realtime-station")
     ? "realtime-station"
     : "estimate-int";
-  data[key] = selectedValue;
 
-  if (
-    typeof config.setting.warning !== "object" ||
-    config.setting.warning == null
-  )
-    config.setting.warning = {};
+  config.setting.warning = config.setting.warning || {};
   config.setting.warning[key] = selectedValue;
+
   WriteConfig(config);
 }
 
 // 預警條件-即時測站
-const WRTS = $(".warning-realtime-station");
-const WRTSLocation = WRTS.querySelector(".location");
-const WRTSShowInt = WRTS.querySelector(".realtime-int");
-const WRTSSelWrapper = WRTS.querySelector(".select-wrapper");
-const WRTSItems = WRTSSelWrapper.querySelector(".int");
+const initializeWarning = (selector) => {
+  const warningElement = $(selector);
+  const location = warningElement.querySelector(".location");
+  const showInt = warningElement.querySelector(".realtime-int, .estimate-int");
+  const selWrapper = warningElement.querySelector(".select-wrapper");
+  const items = selWrapper.querySelector(".int");
 
-initializeSel(WRTS, WRTSLocation, WRTSShowInt, WRTSSelWrapper, WRTSItems);
+  initializeSel(warningElement, location, showInt, selWrapper, items);
+};
 
 // 預警條件-預估震度
-const WEI = $(".warning-estimate-int");
-const WEILocation = WEI.querySelector(".location");
-const WEIShowInt = WEI.querySelector(".estimate-int");
-const WEISelWrapper = WEI.querySelector(".select-wrapper");
-const WEIItems = WEISelWrapper.querySelector(".int");
-
-initializeSel(WEI, WEILocation, WEIShowInt, WEISelWrapper, WEIItems);
+initializeWarning(".warning-realtime-station");
+initializeWarning(".warning-estimate-int");
 
 // 渲染震度選項列表
 const Ints = querySelectorAll(".select-wrapper .int");
-Ints.forEach((Int) => {
-  constant.SETTING.INTENSITY.forEach((text) => {
-    const intItem = CreatEle(text);
-    Int.appendChild(intItem);
-  });
+constant.SETTING.INTENSITY.forEach((text) => {
+  const intItem = CreatEle(text);
+  Ints.forEach((Int) => Int.appendChild(intItem.cloneNode(true)));
 });
 
 // 其他功能-設定頁面背景透明度滑塊
 const sliderContainer = $(".slider-container");
 const sliderTrack = $(".slider-track");
 const sliderThumb = $(".slider-thumb");
-let isDragging = 0;
 
-sliderThumb.addEventListener("mousedown", () => {
-  isDragging = 1;
-});
+let isDragging = false;
 
-addEventListener("mouseup", () => {
-  isDragging = 0;
-});
+const updateSlider = (event) => {
+  if (!isDragging) return;
 
-addEventListener("mousemove", (event) => {
-  if (isDragging) {
-    const containerRect = sliderContainer.getBoundingClientRect();
-    let newLeft = event.clientX - containerRect.left;
-    newLeft = Math.max(0, Math.min(newLeft, containerRect.width));
-    const percentage = (newLeft / containerRect.width) * 100;
-    const blurValue = (newLeft / containerRect.width) * 20;
-    sliderThumb.style.left = `${percentage}%`;
-    sliderTrack.style.width = `${percentage}%`;
-    SettingWrapper.style.backdropFilter = `blur(${blurValue}px)`;
+  const { left, width } = sliderContainer.getBoundingClientRect();
+  let newLeft = Math.max(0, Math.min(event.clientX - left, width));
+  const percentage = (newLeft / width) * 100;
+  const blurValue = (newLeft / width) * 20;
 
-    config.setting["bg-percentage"] = percentage;
-    config.setting["bg-filter"] = blurValue;
-    WriteConfig(config);
-  }
-});
+  sliderThumb.style.left = `${percentage}%`;
+  sliderTrack.style.width = `${percentage}%`;
+  SettingWrapper.style.backdropFilter = `blur(${blurValue}px)`;
 
-// 從storage取得user之前保存的選項
-const GetSelectedFromStorage = () => {
-  const locationData = config.setting["location"] || {};
-  const warningData = config.setting["warning"] || {};
-  sliderThumb.style.left = `${
-    config.setting["bg-percentage"] ? config.setting["bg-percentage"] : 100
-  }%`;
-  sliderTrack.style.width = `${
-    config.setting["bg-percentage"] ? config.setting["bg-percentage"] : 100
-  }%`;
-  SettingWrapper.style.backdropFilter = `blur(${
-    config.setting["bg-filter"] ? config.setting["bg-filter"] : 20
-  }px)`;
+  config.setting["bg-percentage"] = percentage;
+  config.setting["bg-filter"] = blurValue;
+  WriteConfig(config);
+};
+
+sliderThumb.addEventListener("mousedown", () => (isDragging = true));
+addEventListener("mouseup", () => (isDragging = false));
+addEventListener("mousemove", updateSlider);
+
+// 從config取得user之前保存的選項
+const GetSelectedFromConfig = () => {
+  const {
+    location = {},
+    warning = {},
+    "bg-percentage": bgPercentage = 100,
+    "bg-filter": bgFilter = 20,
+    station: station = "未知區域",
+    "map-display-effect": effect = "1",
+    "user-checkbox": selectedcheckbox,
+  } = config.setting;
+
+  sliderThumb.style.left = `${bgPercentage}%`;
+  sliderTrack.style.width = `${bgPercentage}%`;
+  SettingWrapper.style.backdropFilter = `blur(${bgFilter}px)`;
+
   return {
-    city: locationData.city ? locationData.city : "臺南市",
-    town: locationData.town ? locationData.town : "歸仁區",
-    station: config.setting["station"] ? config.setting["station"] : "未知區域",
-    wrts: warningData["realtime-station"]
-      ? warningData["realtime-station"]
-      : constant.SETTING.INTENSITY[0],
-    wei: warningData["estimate-int"]
-      ? warningData["estimate-int"]
-      : constant.SETTING.INTENSITY[0],
-    effect: config.setting["map-display-effect"]
-      ? config.setting["map-display-effect"]
-      : "1",
-    selectedcheckbox: config.setting["user-checkbox"],
+    city: location.city || "臺南市",
+    town: location.town || "歸仁區",
+    station: station,
+    wrts: warning["realtime-station"] || constant.SETTING.INTENSITY[0],
+    wei: warning["estimate-int"] || constant.SETTING.INTENSITY[0],
+    effect,
+    selectedcheckbox,
   };
 };
 
 // 渲染user之前保存的選項
-const RenderSelectedFromStorage = () => {
+const RenderSelectedFromConfig = () => {
   const { city, town, station, wrts, wei, effect, selectedcheckbox } =
-    GetSelectedFromStorage();
-  const current_station = $(".current-station");
+    GetSelectedFromConfig();
 
-  querySelector(".current-city").textContent = city;
-  querySelector(".current-town").textContent = town;
-  querySelector(".realtime-int").textContent = wrts;
-  querySelector(".estimate-int").textContent = wei;
+  const updateText = (selector, text) => {
+    querySelector(selector).textContent = text;
+  };
 
-  if (station && station !== "null") {
-    const stationData = config.setting["station"];
-    if (stationData)
-      current_station.textContent = `${stationData.net} ${stationData.code}-${stationData.name} ${stationData.loc}`;
-  } else current_station.textContent = "未知區域";
+  updateText(".current-city", city);
+  updateText(".current-town", town);
+  updateText(".realtime-int", wrts);
+  updateText(".estimate-int", wei);
 
-  const keys = Object.keys(constant.SETTING.MAP_DISPLAY);
-  const effect_text = keys[effect - 1] || "unknown";
-  querySelector(".current-effect").textContent = effect_text;
+  const stationData = config.setting["station"];
+  const stationText =
+    station && station !== "null" && stationData
+      ? `${stationData.net} ${stationData.code}-${stationData.name} ${stationData.loc}`
+      : "未知區域";
+  updateText(".current-station", stationText);
 
-  /** 選中check box**/
-  const checkboxes = querySelectorAll(".switch input[type='checkbox']");
+  const effect_text =
+    Object.keys(constant.SETTING.MAP_DISPLAY)[effect - 1] || "unknown";
+  updateText(".current-effect", effect_text);
+
+  /** 選中check box **/
   const SelectedCheckBoxes = selectedcheckbox || {};
-  checkboxes.forEach((checkbox) => {
-    const id = checkbox.id;
-    if (SelectedCheckBoxes[id]) checkbox.checked = 1;
-    else checkbox.checked = 0;
+  querySelectorAll(".switch input[type='checkbox']").forEach((checkbox) => {
+    checkbox.checked = SelectedCheckBoxes[checkbox.id] || false;
   });
 };
 
 // 渲染user之前保存的選項
-addEventListener("DOMContentLoaded", RenderSelectedFromStorage);
+addEventListener("DOMContentLoaded", RenderSelectedFromConfig);
 
 const MapDisplayEff = $(".map-display-effect");
 const MapDisplayEffSel = MapDisplayEff.querySelector(".current-effect");
@@ -763,17 +689,16 @@ const MapDisplayEffLocation = MapDisplayEff.querySelector(".location");
 const MapDisplayEffSelWrapper = MapDisplayEff.querySelector(".select-wrapper");
 const MapDisplayEffItems = MapDisplayEffSelWrapper.querySelector(".effect");
 
-if (MapDisplayEffItems)
-  for (const [text, value] of Object.entries(constant.SETTING.MAP_DISPLAY)) {
+if (MapDisplayEffItems) {
+  Object.entries(constant.SETTING.MAP_DISPLAY).forEach(([text, value]) => {
     const intItem = CreatEle(text, "", "", "", { "data-value": value });
     MapDisplayEffItems.appendChild(intItem);
-  }
+  });
+}
 
 const addMapDisplayEffSelEvent = (container, selectElement) => {
-  container.addEventListener("click", (event) => {
-    const closestDiv = event.target.closest(
-      ".usr-location .select-items > div"
-    );
+  container.onclick = (event) => {
+    const closestDiv = event.target.closest(".select-items > div");
     if (closestDiv) {
       selectElement.textContent = closestDiv.textContent;
       container
@@ -781,69 +706,75 @@ const addMapDisplayEffSelEvent = (container, selectElement) => {
         .forEach((div) => div.classList.remove("select-option-selected"));
       closestDiv.classList.add("select-option-selected");
     }
-  });
+  };
 };
 
-MapDisplayEffLocation.addEventListener("click", function () {
+// 地圖下拉選單箭頭
+MapDisplayEffLocation.onclick = function () {
   const ArrowSpan = this.querySelector(".selected-btn");
   ArrowSpan.textContent =
-    ArrowSpan.textContent.trim() == "keyboard_arrow_up"
+    ArrowSpan.textContent.trim() === "keyboard_arrow_up"
       ? "keyboard_arrow_down"
       : "keyboard_arrow_up";
   MapDisplayEffSelWrapper.classList.toggle("select-show-big");
-});
+};
 
+// 更新地圖顯示效果
+const updateMapDisplayEffect = (selectedElement) => {
+  MapDisplayEffSel.textContent = selectedElement.textContent;
+  MapDisplayEffSelWrapper.querySelectorAll("div").forEach((div) =>
+    div.classList.remove("select-option-selected")
+  );
+  selectedElement.classList.add("select-option-selected");
+
+  config.setting["map-display-effect"] = selectedElement.dataset.value;
+  WriteConfig(config);
+};
+
+// 地圖顯示效果下拉選單
 MapDisplayEffItems.addEventListener("click", (event) => {
   const closestDiv = event.target.closest(
     ".map-display-effect .select-items > div"
   );
   if (closestDiv) {
-    MapDisplayEffSel.textContent = closestDiv.textContent;
-    MapDisplayEffSelWrapper.querySelectorAll("div").forEach((div) =>
-      div.classList.remove("select-option-selected")
-    );
-    closestDiv.classList.toggle("select-option-selected");
-
-    config.setting["map-display-effect"] = closestDiv.dataset.value;
-    WriteConfig(config);
+    updateMapDisplayEffect(closestDiv);
   }
 });
 
 addMapDisplayEffSelEvent(MapDisplayEffItems, MapDisplayEffSel);
 
 const Tos = $(".tos");
+const tosWrapper = $(".tos_wrapper");
 if (!ReadConfig().setting["tos"]) {
   display([Tos], "flex");
   setTimeout(() => {
-    const tosWrapper = $(".tos_wrapper");
     tosWrapper.style.height = "19em";
     opacity([tosWrapper], 1);
   }, 2500);
+
+  $(".tos_sure").onclick = () => {
+    opacity([Tos], 0);
+    setTimeout(() => {
+      display([Tos]);
+      config.setting["tos"] = 1;
+      WriteConfig(config);
+    }, 2000);
+  };
 }
 
-$(".tos_sure").addEventListener("click", () => {
-  opacity([Tos], 0);
-  setTimeout(() => {
-    display([Tos]);
-    config.setting["tos"] = 1;
-    WriteConfig(config);
-  }, 2000);
-});
-
-/** 滑條選中**/
-const checkboxes = document.querySelectorAll(".switch input[type='checkbox']");
-const updateCheckboxesLocalStorage = () => {
-  const selectedCheckbox = Object.fromEntries(
-    Array.from(checkboxes).map((cb) => [cb.id, cb.checked ? 1 : 0])
-  );
-
+/** 滑條選中 **/
+const checkboxes = querySelectorAll(".switch input[type='checkbox']");
+const updateCheckboxesConfig = () => {
+  const selectedCheckbox = Array.from(checkboxes).reduce((acc, cb) => {
+    acc[cb.id] = cb.checked ? 1 : 0;
+    return acc;
+  }, {});
   config.setting["user-checkbox"] = selectedCheckbox;
   WriteConfig(config);
   fault();
 };
-
 checkboxes.forEach((checkbox) =>
-  checkbox.addEventListener("change", updateCheckboxesLocalStorage)
+  checkbox.addEventListener("change", updateCheckboxesConfig)
 );
 
 /** 檢查新版本**/
@@ -854,23 +785,23 @@ async function checkForNewRelease() {
       "https://api.github.com/repos/ExpTechTW/TREM-Lite/releases"
     );
     if (!response.ok) throw new Error("Network response was not ok");
+
     const releases = await response.json();
-    if (releases.length > 0) {
-      const latestVersion = releases[0].tag_name.replace("v", "");
-      NewVersion.textContent = latestVersion;
-      CurrentVersion.textContent = app_version;
-      if (compareVersions(latestVersion, app_version) > 0) {
-        NewVersion.style.color = "#fff900";
-        AppVersion.classList.add("new");
-        AppVersion.style.display = "flex";
-      } else {
-        AppVersion.style.display = "none";
-      }
-    }
+    if (releases.length === 0) return;
+
+    const latestVersion = releases[0].tag_name.replace("v", "");
+    const isNewVersion = compareVersions(latestVersion, app_version) > 0;
+
+    NewVersion.textContent = latestVersion;
+    CurrentVersion.textContent = app_version;
+    NewVersion.style.color = isNewVersion ? "#fff900" : "";
+    AppVersion.classList.toggle("new", isNewVersion);
+    AppVersion.style.display = isNewVersion ? "flex" : "none";
   } catch (error) {
     console.error("Failed to fetch release information:", error);
   }
 }
+checkForNewRelease();
 
 function compareVersions(latest, current) {
   const toNumberArray = (version) => version.split(".").map(Number);
@@ -879,14 +810,14 @@ function compareVersions(latest, current) {
     toNumberArray(current),
   ];
   const length = Math.max(latestParts.length, currentParts.length);
+
   for (let i = 0; i < length; i++) {
     const [latestPart, currentPart] = [
       latestParts[i] || 0,
       currentParts[i] || 0,
     ];
-    if (latestPart > currentPart) return 1;
-    if (latestPart < currentPart) return -1;
+    if (latestPart !== currentPart) return latestPart - currentPart;
   }
+
   return 0;
 }
-checkForNewRelease();

@@ -215,6 +215,18 @@ function report_more(data, int) {
   text(ReportTitle, LocalReplace(loc));
   text(ReportSubTitle, CheckNo !== "000" ? `編號 ${No}` : "小區域有感地震");
   ReportMaxIntensity.className = `report-max-intensity intensity-${int}`;
+
+  const EpicCenter = querySelectorAll(".epiccenter");
+  EpicCenter.forEach((element) => element.remove());
+  const epic_center = L.icon({
+    iconUrl: "../resource/image/cross.png",
+    iconSize: [40, 40],
+    className: "epiccenter",
+    zIndexOffset: 2000,
+  });
+  L.marker([lat, lon], { icon: epic_center }).addTo(variable.map);
+  variable.map.setView([lat, lon], 8.5);
+
   report_grouped(data);
   report_all(data);
 }
@@ -403,6 +415,10 @@ ReportBackBtn.addEventListener("click", () => {
   opacity([ReportBoxWrapper], 0);
   setTimeout(() => display([ReportBoxWrapper], ""), 100);
   opacity([ReportListWrapper, InfoBox], 1);
+
+  const EpicCenter = querySelectorAll(".epiccenter");
+  EpicCenter.forEach((element) => element.remove());
+  variable.map.setView([23.6, 120.4], 7.8);
 });
 
 StopReplayBtn.addEventListener("click", () => {
