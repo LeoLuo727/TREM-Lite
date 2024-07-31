@@ -117,6 +117,7 @@ const constant = {
       重慶市: ["北碚區"],
     },
     CHECKBOX_DEF: {
+      "early-warning-TREM": 1,
       "early-warning-CWA": 1,
       "early-warning-JMA": 1,
       "early-warning-KMA": 1,
@@ -243,6 +244,9 @@ const variable = {
     list_retry: 3,
     survey: null,
     withoutNo: "",
-    replay_data: [],
+    replay_data: {},
+    show_int: null,
+    icon: [],
+    replay_status: 0,
   },
 };

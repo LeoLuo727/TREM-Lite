@@ -43,7 +43,7 @@ async function report(t, retryCount = 0) {
   try {
     logger.info("[Fetch] Fetching report data...");
     const ReportList = $(".report-list-items");
-    const res = await fetchData(`${API_url()}v2/eq/report?limit=20`);
+    const res = await fetchData(`${API_url()}v2/eq/report?limit=15`);
     if (!res.ok) return;
     logger.info("[Fetch] Got report data");
     const data = await res.json();
@@ -175,7 +175,6 @@ async function report(t, retryCount = 0) {
     }
   }
 }
-report(0);
 
 async function ReportInfo(id, int, retryCount = 0) {
   try {
@@ -225,10 +224,39 @@ function report_more(data, int) {
     zIndexOffset: 2000,
   });
   L.marker([lat, lon], { icon: epic_center }).addTo(variable.map);
-  variable.map.setView([lat, lon], 8.5);
+  variable.map.setView([lat, lon], 9);
 
+  variable.report.show_int = true;
+
+  report_int(data);
   report_grouped(data);
   report_all(data);
+}
+
+function report_int(data) {
+  if (!variable.map) {
+    console.error("Map is not initialized");
+    return;
+  }
+  const regions = Object.keys(data.list);
+  regions.forEach((region) => {
+    const towns = data.list[region].town;
+    Object.keys(towns).forEach((town) => {
+      const townData = towns[town];
+      const lat = townData.lat;
+      const lon = townData.lon;
+      const intensity = townData.int;
+
+      const icon = L.divIcon({
+        className: `report_dot dot intensity-${intensity}`,
+        html: `<span>${int_to_intensity(intensity)}</span>`,
+        iconSize: [20 + variable.icon_size, 20 + variable.icon_size],
+      });
+
+      const marker = L.marker([lat, lon], { icon: icon }).addTo(variable.map);
+      variable.report.icon.push(marker);
+    });
+  });
 }
 
 function report_grouped(data) {
@@ -300,6 +328,7 @@ function report_all(data) {
 }
 
 function show_rts_list() {
+  variable.fault.bringToFront();
   const _eew_list = Object.keys(variable.eew_list);
   const len = _eew_list.length;
   opacity([ReportListBtn], len || rts_replay_time > 0 ? 0 : 1);
@@ -311,11 +340,31 @@ function show_rts_list() {
     display([InfoBodyEQBox], current_eew.detail == 0 ? "" : "flex");
     display([InfoNSSPE], current_eew.detail == 0 ? "block" : "");
     opacity([SettingWrapper], 0);
-    opacity([InfoBox, InfoBodyTitleBox, InfoBodyFooter], 1);
+    opacity([InfoBox], 1);
     display([ReportBoxWrapper], "none");
     display([SettingWrapper], "none");
     ReportListWrapper.classList.add("hidden");
+
+    variable.report.show_int = null;
+    const epicenters = document.querySelectorAll(".epiccenter");
+    epicenters.forEach((epicenter) => epicenter.remove());
+
+    if (variable.report.icon) {
+      variable.report.icon.forEach((marker) => {
+        if (marker.options.icon.options.className.includes("report_dot")) {
+          variable.map.removeLayer(marker);
+        }
+      });
+    }
   } else {
+    if (
+      variable.report.replay_data &&
+      variable.report.replay_data.eew &&
+      variable.report.replay_data.eew.length > 0
+    ) {
+      variable.replay = 0;
+      variable.report.replay_data = {};
+    }
     opacity([InfoBodyTitleBox, InfoBodyFooter], 0);
     opacity(
       [InfoBox, ReportListWrapper],
@@ -398,6 +447,17 @@ ReportActionReplay.addEventListener("click", () => {
   rts_replay_time = originTime.getTime();
   opacity([ReportBoxWrapper], 0);
   display([StopReplayWrapper], "flex");
+
+  if (variable.report.icon) {
+    variable.report.icon.forEach((marker) => variable.map.removeLayer(marker));
+    variable.report.icon = [];
+  }
+
+  const EpicCenter = querySelectorAll(".epiccenter");
+  EpicCenter.forEach((element) => element.remove());
+  variable.map.setView([23.6, 120.4], 7.8);
+  variable.report.show_int = null;
+  variable.report.replay_status = 1;
 });
 
 // 報告頁面
@@ -416,9 +476,15 @@ ReportBackBtn.addEventListener("click", () => {
   setTimeout(() => display([ReportBoxWrapper], ""), 100);
   opacity([ReportListWrapper, InfoBox], 1);
 
+  if (variable.report.icon) {
+    variable.report.icon.forEach((marker) => variable.map.removeLayer(marker));
+    variable.report.icon = [];
+  }
+
   const EpicCenter = querySelectorAll(".epiccenter");
   EpicCenter.forEach((element) => element.remove());
   variable.map.setView([23.6, 120.4], 7.8);
+  variable.report.show_int = null;
 });
 
 StopReplayBtn.addEventListener("click", () => {
@@ -426,14 +492,14 @@ StopReplayBtn.addEventListener("click", () => {
 });
 
 function stop_replay() {
-  variable.focus.bounds.eew = L.latLngBounds();
-  variable.focus.status.eew = 1;
   clearInterval(replay_timer);
+  variable.report.replay_data = {};
   rts_replay_time = 0;
   variable.replay = 0;
-  variable.report.replay_data = {};
+  variable.report.replay_status = 0;
   variable.report.survey = null;
-
+  variable.focus.bounds.eew = L.latLngBounds();
+  variable.focus.status.eew = 1;
   const keys = Object.keys(variable.eew_list);
   keys.forEach((key) => {
     if (variable.eew_list[key].layer.s) variable.eew_list[key].layer.s.remove();

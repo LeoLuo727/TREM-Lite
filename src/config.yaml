@@ -1,22 +1,22 @@
 setting:
   location:
-    city: 苗栗縣
-    town: 竹南鎮
-    lat: 24.6838448
-    lon: 120.8733503
+    city: 臺南市
+    town: 歸仁區
+    lat: 22.967286
+    lon: 120.2940045
   warning:
-    realtime-station: 5強
-    estimate-int: 2級
+    realtime-station: 0級
+    estimate-int: 0級
   bg-filter: 20
   bg-percentage: 100
-  map-display-effect: '4'
+  map-display-effect: 1
   station:
+    name: '6732340'
     net: SE-Net
-    code: '600'
-    name: '4568880'
-    loc: 嘉義市東區
-    lat: '23.4539778'
-    lon: '120.4559805'
+    loc: 臺南市歸仁區
+    code: 711
+    lat: 22.980406
+    lon: 120.292724
   user-checkbox:
     early-warning-CWA: 1
     early-warning-JMA: 1
@@ -43,5 +43,4 @@ setting:
     sound-effects-Shindo1: 1
     sound-effects-Shindo2: 1
     sound-effects-Update: 1
-  login: ''
-  tos: 1
+  tos: 0

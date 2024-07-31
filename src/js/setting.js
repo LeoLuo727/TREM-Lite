@@ -30,37 +30,59 @@ version.textContent = app.getVersion();
 system_os.textContent = `${os.version()} (${os.release()})`;
 system_cpu.textContent = `${os.cpus()[0].model}`;
 
-async function ls_init() {
-  await realtimeStation();
-  Object.entries(constant.SETTING.LOCALSTORAGE_DEF).forEach(([key, value]) => {
-    if (!config.setting[key]) {
-      config.setting[key] = value;
+function ls_init() {
+  return new Promise(async (resolve) => {
+    await config_init();
+
+    await realtimeStation();
+
+    Object.entries(constant.SETTING.LOCALSTORAGE_DEF).forEach(
+      ([key, value]) => {
+        if (!config.setting[key]) {
+          config.setting[key] = value;
+          WriteConfig(config);
+        }
+      }
+    );
+
+    const def_loc = constant.SETTING.LOCALSTORAGE_DEF["location"];
+    const def_loc_info = constant.REGION[def_loc.city][def_loc.town];
+
+    if (!config.setting["station"]) {
+      config.setting["station"] = NearStation(
+        def_loc_info.lat,
+        def_loc_info.lon
+      );
       WriteConfig(config);
     }
-  });
-  const def_loc = constant.SETTING.LOCALSTORAGE_DEF["location"];
-  const def_loc_info = constant.REGION[def_loc.city][def_loc.town];
 
-  if (!config.setting["station"]) {
-    config.setting["station"] = NearStation(def_loc_info.lat, def_loc_info.lon);
+    const userCheckbox = config.setting["user-checkbox"] || {};
+
+    Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key) => {
+      if (!(key in userCheckbox)) userCheckbox[key] = 1;
+    });
+
+    config.setting["user-checkbox"] = userCheckbox;
     WriteConfig(config);
-  }
 
-  const userCheckbox = config.setting["user-checkbox"] || {};
+    if (config.setting["login"]) {
+      LoginBtn.click();
+      LoginSuccess(await getUserInfo(config.setting["login"]));
+    }
 
-  Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key) => {
-    if (!(key in userCheckbox)) userCheckbox[key] = 1;
+    if (document.readyState !== "loading") {
+      RenderSelectedFromConfig();
+      resolve();
+    }
+
+    fault();
+    usr_location();
+    report(0);
   });
-
-  config.setting["user-checkbox"] = userCheckbox;
-  WriteConfig(config);
-
-  if (config.setting["login"]) {
-    LoginBtn.click();
-    LoginSuccess(await getUserInfo(config.setting["login"]));
-  }
 }
-ls_init();
+ls_init().then(() => {
+  console.log("Initialization complete");
+});
 
 // 左側選單按鈕點擊
 querySelectorAll(".setting-buttons .button").forEach((button) => {
@@ -365,7 +387,7 @@ function renderFilteredStations(stations) {
 StationLocation.onclick = () => {
   const ArrowSpan = StationLocation.querySelector(".selected-btn");
   ArrowSpan.textContent =
-    ArrowSpan.textContent.trim() === "keyboard_arrow_up"
+    ArrowSpan.textContent.trim() == "keyboard_arrow_up"
       ? "keyboard_arrow_down"
       : "keyboard_arrow_up";
   StationSelWrapper.classList.toggle("select-show-big");
@@ -436,21 +458,23 @@ async function handleUserAction(endpoint, options) {
     const response = await fetch(`${elements.url}${endpoint}`, options);
     const responseData = await response.text();
     const isSuccess = response.ok;
-    const action = options.method === "POST" ? "登入" : "登出";
+    const action = options.method == "POST" ? "登入" : "登出";
 
     elements.LoginMsg.className = isSuccess ? "success" : "error";
     elements.LoginMsg.textContent = isSuccess
       ? `${action}成功！`
-      : response.status === 400 || response.status === 401
+      : response.status == 400 || response.status == 401
       ? "帳號或密碼錯誤！"
       : `伺服器異常(error ${response.status})`;
 
     if (isSuccess) {
-      config.setting.login = responseData === "OK" ? "" : responseData || "";
+      config.setting.login = responseData == "OK" ? "" : responseData || "";
       WriteConfig(config);
-      endpoint === "login"
+      endpoint == "login"
         ? LoginSuccess(await getUserInfo(responseData))
         : LogoutSuccess();
+      $("#email").value = "";
+      $("#password").value = "";
     } else {
       elements.LoginMsg.classList.add("shake");
     }
@@ -517,7 +541,13 @@ function LoginSuccess(msg) {
   display([elements.LoginBtn]);
   display([elements.LogoutBtn], "flex");
   elements.act.textContent = `Welcome,${msg ? "VIP" : "User"}`;
-  elements.vip_time.textContent = msg.vip > 0 ? formatTime(msg.vip) : "";
+  console.log(msg.permission);
+  elements.vip_time.textContent =
+    msg.vip > 0
+      ? formatTime(msg.vip)
+      : msg.permission.length > 1
+      ? "高級VIP"
+      : "";
   elements.LoginBack.dispatchEvent(clickEvent);
 }
 
@@ -540,7 +570,7 @@ function initializeSel(type, location, showInt, selectWrapper, items) {
   location.onclick = () => {
     const ArrowSpan = location.querySelector(".selected-btn");
     ArrowSpan.textContent =
-      ArrowSpan.textContent.trim() === "keyboard_arrow_up"
+      ArrowSpan.textContent.trim() == "keyboard_arrow_up"
         ? "keyboard_arrow_down"
         : "keyboard_arrow_up";
     selectWrapper.classList.toggle("select-show-big");
@@ -649,12 +679,12 @@ const GetSelectedFromConfig = () => {
 };
 
 // 渲染user之前保存的選項
-const RenderSelectedFromConfig = () => {
+function RenderSelectedFromConfig() {
   const { city, town, station, wrts, wei, effect, selectedcheckbox } =
     GetSelectedFromConfig();
 
   const updateText = (selector, text) => {
-    querySelector(selector).textContent = text;
+    document.querySelector(selector).textContent = text;
   };
 
   updateText(".current-city", city);
@@ -675,13 +705,12 @@ const RenderSelectedFromConfig = () => {
 
   /** 選中check box **/
   const SelectedCheckBoxes = selectedcheckbox || {};
-  querySelectorAll(".switch input[type='checkbox']").forEach((checkbox) => {
-    checkbox.checked = SelectedCheckBoxes[checkbox.id] || false;
-  });
-};
-
-// 渲染user之前保存的選項
-addEventListener("DOMContentLoaded", RenderSelectedFromConfig);
+  document
+    .querySelectorAll(".switch input[type='checkbox']")
+    .forEach((checkbox) => {
+      checkbox.checked = SelectedCheckBoxes[checkbox.id] || false;
+    });
+}
 
 const MapDisplayEff = $(".map-display-effect");
 const MapDisplayEffSel = MapDisplayEff.querySelector(".current-effect");
@@ -713,7 +742,7 @@ const addMapDisplayEffSelEvent = (container, selectElement) => {
 MapDisplayEffLocation.onclick = function () {
   const ArrowSpan = this.querySelector(".selected-btn");
   ArrowSpan.textContent =
-    ArrowSpan.textContent.trim() === "keyboard_arrow_up"
+    ArrowSpan.textContent.trim() == "keyboard_arrow_up"
       ? "keyboard_arrow_down"
       : "keyboard_arrow_up";
   MapDisplayEffSelWrapper.classList.toggle("select-show-big");
@@ -787,7 +816,7 @@ async function checkForNewRelease() {
     if (!response.ok) throw new Error("Network response was not ok");
 
     const releases = await response.json();
-    if (releases.length === 0) return;
+    if (releases.length == 0) return;
 
     const latestVersion = releases[0].tag_name.replace("v", "");
     const isNewVersion = compareVersions(latestVersion, app_version) > 0;

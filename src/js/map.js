@@ -211,8 +211,9 @@ function fault() {
       },
     })
     .addTo(variable.map);
+
+  variable.fault.bringToFront();
 }
-fault();
 
 function usr_location() {
   const flashElements = document.querySelectorAll(".usr_loc");
@@ -225,4 +226,3 @@ function usr_location() {
   const location = config.setting["location"];
   L.marker([location.lat, location.lon], { icon: usr_ico }).addTo(variable.map);
 }
-usr_location();

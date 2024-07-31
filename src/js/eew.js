@@ -4,7 +4,6 @@ let last_show_epicenter_time = 0;
 let last_map_count = 0;
 setInterval(() => {
   const _eew_list = Object.keys(variable.eew_list);
-
   if (!_eew_list.length) return;
   if (draw_lock) return;
   draw_lock = true;
@@ -18,6 +17,7 @@ setInterval(() => {
       rts_replay_time = 0;
       variable.replay = 0;
       variable.report.replay_data = {};
+      variable.report.replay_status = 0;
       variable.report.survey = null;
       variable.map.setView([23.6, 120.4], 7.8);
 
@@ -98,6 +98,7 @@ setInterval(() => {
 setInterval(() => {
   const _eew_list = Object.keys(variable.eew_list);
   if (!_eew_list.length) return;
+
   const now_local_time = Date.now();
   if (now_local_time - variable.last_map_update < 10000) return;
   variable.last_map_update = now_local_time;
@@ -169,6 +170,7 @@ setInterval(() => {
           .addTo(variable.map);
     }
   }
+  opacity([InfoBodyTitleBox, InfoBodyFooter], 1);
   $("#info-depth").textContent = data.eq.depth;
   $("#info-no").textContent = `第${data.serial}報${data.final ? "(最終)" : ""}`;
   $("#info-loc").textContent = data.eq.loc;
@@ -215,8 +217,8 @@ setInterval(() => {
 // }, 5000);
 
 function show_eew(data) {
-  const id_str = `${data.id}-${data.serial}-${data.status == 3 ? 1 : 0}`;
   if (early(data)) return;
+  const id_str = `${data.id}-${data.serial}-${data.status == 3 ? 1 : 0}`;
   if (variable.time_cache_list.includes(id_str)) return;
   variable.time_cache_list.push(id_str);
   const now_time = data.time + (now() - data.timestamp);

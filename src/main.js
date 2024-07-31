@@ -1,4 +1,12 @@
-const { app, BrowserWindow, ipcMain, shell, Tray, nativeImage, Menu } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  shell,
+  Tray,
+  nativeImage,
+  Menu,
+} = require("electron");
 const path = require("path");
 
 /**
@@ -6,22 +14,22 @@ const path = require("path");
  */
 let win;
 let tray = null;
-const hide = (process.argv.includes("--start")) ? true : false;
+const hide = process.argv.includes("--start") ? true : false;
 
-const test = (process.argv.includes("--raw")) ? 0 : 1;
+const test = process.argv.includes("--raw") ? 0 : 1;
 
 function createWindow() {
   win = new BrowserWindow({
-    title          : `TREM Lite v${app.getVersion()}`,
-    minHeight      : 540,
-    minWidth       : 750,
-    width          : 1280,
-    height         : 720,
-    icon           : "TREM.ico",
-    webPreferences : {
-      nodeIntegration      : true,
-      backgroundThrottling : false,
-      contextIsolation     : false,
+    title: `TREM Lite v${app.getVersion()}`,
+    minHeight: 540,
+    minWidth: 750,
+    width: 1280,
+    height: 720,
+    icon: "TREM.ico",
+    webPreferences: {
+      nodeIntegration: true,
+      backgroundThrottling: false,
+      contextIsolation: false,
     },
   });
 
@@ -31,9 +39,9 @@ function createWindow() {
   require("@electron/remote/main").enable(win.webContents);
 
   app.setLoginItemSettings({
-    openAtLogin : true,
-    name        : "TREM Lite",
-    args        : ["--start"],
+    openAtLogin: true,
+    name: "TREM Lite",
+    args: ["--start"],
   });
 
   win.setMenu(null);
@@ -116,6 +124,19 @@ ipcMain.on("toggleFullscreen", () => {
   if (win) win.setFullScreen(!win.isFullScreen());
 });
 
+ipcMain.on("showMainWindow", () => {
+  showMainWindow();
+});
+
+function showMainWindow() {
+  if (win && !win.isDestroyed()) {
+    if (win.isMinimized()) win.restore();
+    if (!win.isVisible()) win.show();
+    win.setAlwaysOnTop(true);
+    win.focus();
+  }
+}
+
 function trayIcon() {
   if (tray) {
     tray.destroy();
@@ -132,22 +153,22 @@ function trayIcon() {
   });
   const contextMenu = Menu.buildFromTemplate([
     {
-      label : `TREM Lite v${app.getVersion()}`,
-      type  : "normal",
-      click : () => void 0,
+      label: `TREM Lite v${app.getVersion()}`,
+      type: "normal",
+      click: () => void 0,
     },
     {
       type: "separator",
     },
     {
-      label : "重新啟動",
-      type  : "normal",
-      click : () => restart(),
+      label: "重新啟動",
+      type: "normal",
+      click: () => restart(),
     },
     {
-      label : "強制關閉",
-      type  : "normal",
-      click : () => {
+      label: "強制關閉",
+      type: "normal",
+      click: () => {
         app.isQuiting = true;
         app.exit(0);
       },

@@ -1,6 +1,6 @@
 {
   "name": "trem_lite",
-  "version": "2.0.1-pre.1",
+  "version": "2.0.0-pre.2",
   "description": "Taiwan Real-time Earthquake Monitoring",
   "main": "main.js",
   "author": "whes1015",
@@ -45,6 +45,7 @@
     "leaflet": "^1.9.4",
     "leaflet-edgebuffer": "^1.0.6",
     "leaflet-geojson-vt": "github:ExpTechTW/leaflet-geojson-vt",
+    "maplibre-gl": "^4.5.0",
     "speak-tts": "^2.0.8",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1",

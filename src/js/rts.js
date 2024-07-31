@@ -88,10 +88,7 @@ function show_rts_box(_colors) {
 
 function show_rts_dot(data, alert) {
   if (!variable.station_info) return;
-  if (data.eew) {
-    const _eew_list = Object.keys(variable.eew_list);
-    if (!_eew_list.length) return;
-  }
+  if (early(data)) return;
 
   if (!alert) {
     variable.audio = {
@@ -149,7 +146,7 @@ function show_rts_dot(data, alert) {
     const I = intensity_float_to_int(data.station[id].I);
     const icon = !data.station[id].alert
       ? L.divIcon({
-          className: intensityClass,
+          className: !variable.report.show_int ? intensityClass : "",
           html: "<span></span>",
           iconSize: [10 + variable.icon_size, 10 + variable.icon_size],
         })

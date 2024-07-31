@@ -4,9 +4,9 @@ setInterval(() => {
   const _now = now();
   // if (new Date(_now).getSeconds() == 0)
   // if (!variable.subscripted_list.includes("websocket.report")) updateReports();
-  if (variable.replay) {
+  if (variable.report.replay_status && variable.report.replay_data.time) {
     doc_time.style.color = "yellow";
-    doc_time.textContent = formatTime(variable.replay);
+    doc_time.textContent = formatTime(variable.report.replay_data.time);
   } else if (_now - variable.last_get_data_time > 5000) {
     doc_time.style.color = "red";
     document.getElementById("connect").style.color = "red";

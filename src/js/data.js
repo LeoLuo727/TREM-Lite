@@ -44,6 +44,7 @@ function read_replay_file() {
     );
 
     const alert = Object.keys(data.rts.box).length;
+    data.rts.eew = data.eew;
     show_rts_dot(data.rts, alert);
     if (alert) show_rts_box(data.rts.box);
 
@@ -57,11 +58,14 @@ function read_replay_file() {
     for (const intensity of data.intensity) show_intensity(intensity);
 
     variable.replay = data.rts.time;
+    variable.report.replay_status = data.rts.time;
+    variable.report.replay_data = data.rts;
+    variable.last_get_data_time = now();
   }
 }
 
 async function realtime_rts() {
-  if (rts_replay_time > 0) return;
+  if (variable.report.replay_status) return;
   const res = await fetchData(`${LB_url()}v1/trem/rts`);
   const data = await res.json();
   const alert = Object.keys(data.box).length;
@@ -73,7 +77,7 @@ async function realtime_rts() {
 }
 
 async function realtime_eew() {
-  if (rts_replay_time > 0) return;
+  if (variable.report.replay_status) return;
   const res = await fetchData(`${LB_url()}v1/eq/eew`);
   const data = await res.json();
   for (const eew of data) {
@@ -92,20 +96,36 @@ async function ntp() {
 
 let rts_replay_time = 0;
 
-const fetchWithFallback = async (url, fallbackUrl, options = {}) => {
+const fetchWithFallback = async (
+  url,
+  fallbackUrl,
+  options = {},
+  timeout = 5000
+) => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(url, { ...options, signal });
+    clearTimeout(timeoutId);
     if (response.ok) return response.json();
-    if (response.status === 404) {
+
+    if (response.status == 404) {
       const fallbackResponse = await fetch(fallbackUrl, options);
       if (fallbackResponse.ok) return fallbackResponse.json();
       throw new Error(
         `Fallback request failed with status ${fallbackResponse.status}`
       );
     }
+
     throw new Error(`Request failed with status ${response.status}`);
   } catch (error) {
-    console.error(error);
+    if (error.name == "AbortError") {
+      console.error("Request timed out");
+    } else {
+      console.error(error);
+    }
     return null;
   }
 };
@@ -138,7 +158,6 @@ setInterval(() => {
     });
     if (!variable.report.replay_data.box) return;
     const rp_data = variable.report.replay_data;
-    variable.replay = rp_data.time;
     const alert = Object.keys(rp_data.box).length;
     if (alert) show_rts_box(rp_data.box);
     if (rp_data.eew) {

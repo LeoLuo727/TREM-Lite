@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const doc_time = $("#time");
 
 const speech = new Speech.default();
@@ -6,37 +5,49 @@ const speech = new Speech.default();
   await speech.init();
   speech.setLanguage("zh-TW");
   speech.setVoice("Microsoft Yating - Chinese (Traditional, Taiwan)");
-  //   speech.setLanguage("ja-JP");
-  //   speech.setVoice("Microsoft Sayaka - Japanese (Japan)");
+  // speech.setLanguage("ja-JP");
+  // speech.setVoice("Microsoft Sayaka - Japanese (Japan)");
   speech.setRate(1.5);
-  // variable.speech_status = 1;
+  variable.speech_status = 1;
 })();
+
+const configFilePath = path.join(app.getPath("userData"), "config.yaml");
+
+let config = {};
 
 function ReadConfig() {
   try {
-    config = yaml.load(fs.readFileSync("config.yaml", "utf8"));
-    return config;
+    if (fs.existsSync(configFilePath)) {
+      return yaml.load(fs.readFileSync(configFilePath, "utf8"));
+    } else {
+      return null;
+    }
   } catch (e) {
-    console.log(e);
+    console.error("Error reading config:", e);
   }
 }
 
 function WriteConfig(data) {
-  const yamlStr = yaml.dump(data);
-  fs.writeFileSync("config.yaml", yamlStr, "utf8");
+  try {
+    const yamlStr = yaml.dump(data);
+    fs.writeFileSync(configFilePath, yamlStr, "utf8");
+  } catch (e) {
+    console.error("Error writing config:", e);
+  }
 }
 
 function config_init() {
-  let config = ReadConfig();
+  config = ReadConfig();
 
   if (!config) {
+    console.log("Config file does not exist.");
     config = {
       setting: {},
     };
     WriteConfig(config);
   } else if (!config.setting) {
+    console.log("missing setting.");
     config.setting = {};
     WriteConfig(config);
   }
 }
-config_init();

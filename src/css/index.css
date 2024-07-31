@@ -1756,3 +1756,10 @@ body:has(#report-panel.show) .pga_dot {
   margin-left: 5px;
   font-weight: bold;
 }
+
+.marker-icon {
+  width: 40px;
+  height: 40px;
+  background-image: url("../resource/image/cross.png");
+  background-size: cover;
+}
