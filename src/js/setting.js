@@ -57,8 +57,10 @@ function ls_init() {
     }
 
     const userCheckbox = config.setting["user-checkbox"] || {};
-    Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key) => {
-      if (!(key in userCheckbox)) userCheckbox[key] = 1;
+    Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key, value) => {
+      console.log(value);
+      if (!(key in userCheckbox))
+        userCheckbox[key] = constant.SETTING.CHECKBOX_DEF[key];
     });
 
     config.setting["user-checkbox"] = userCheckbox;
@@ -566,7 +568,7 @@ function LoginSuccess(msg) {
   TREM_EEW.forEach((trem) => {
     const div = trem.closest(".setting-option > div");
     if (div) {
-      div.classList.toggle("block", data.includes("exptech.studio"));
+      div.classList.toggle("block", !data.includes("exptech.studio"));
     }
   });
 }
@@ -577,6 +579,14 @@ function LogoutSuccess() {
   elements.act.textContent = "尚未登入";
   elements.vip_time.textContent = "";
   elements.LoginBtn.dispatchEvent(clickEvent);
+
+  const TREM_EEW = querySelectorAll("#early-warning-TREM");
+  TREM_EEW.forEach((trem) => {
+    const div = trem.closest(".setting-option > div");
+    if (div) {
+      div.classList.add("block");
+    }
+  });
 }
 
 const clickEvent = new MouseEvent("click", {
