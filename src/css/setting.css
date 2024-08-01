@@ -289,6 +289,11 @@ body {
   margin-top: 3vh;
 }
 
+.extended .setting-option {
+  display: grid;
+  justify-content: center;
+}
+
 .info .setting-option div {
   align-items: flex-start !important;
 }
@@ -331,10 +336,6 @@ body {
   border-bottom: unset !important;
   border-color: unset !important;
   padding: 5px 5px 5px 5px;
-}
-
-.extended .setting-option {
-  display: inline-grid;
 }
 
 .special-text {
@@ -421,7 +422,7 @@ li {
   flex-direction: column;
   justify-items: center;
   align-items: center;
-  background-color: rgb(27 33 50 / 38%);
+  background-color: rgb(27 33 50 / 80%);
   backdrop-filter: blur(12px);
   padding: 15px;
   border-width: 1px 0px 0px 0px;

@@ -8,15 +8,36 @@ const {
   Menu,
 } = require("electron");
 const path = require("path");
+const fs = require("fs");
+const yaml = require("js-yaml");
 
-/**
- * @type {BrowserWindow}
- */
 let win;
 let tray = null;
 const hide = process.argv.includes("--start") ? true : false;
-
 const test = process.argv.includes("--raw") ? 0 : 1;
+
+const configFilePath = path.join(app.getPath("userData"), "config.yaml");
+
+const defaultConfig = {
+  setting: {
+    "user-checkbox": {
+      "other-auto-launch": false,
+    },
+  },
+};
+
+function readConfig() {
+  try {
+    if (!fs.existsSync(configFilePath)) {
+      fs.writeFileSync(configFilePath, yaml.dump(defaultConfig), "utf8");
+    }
+    const config = yaml.load(fs.readFileSync(configFilePath, "utf8"));
+    return config.setting["user-checkbox"]["other-auto-launch"];
+  } catch (e) {
+    console.error("Error reading config file:", e);
+    return false;
+  }
+}
 
 function createWindow() {
   win = new BrowserWindow({
@@ -37,12 +58,6 @@ function createWindow() {
 
   require("@electron/remote/main").initialize();
   require("@electron/remote/main").enable(win.webContents);
-
-  app.setLoginItemSettings({
-    openAtLogin: true,
-    name: "TREM Lite",
-    args: ["--start"],
-  });
 
   win.setMenu(null);
 
@@ -69,6 +84,14 @@ function createWindow() {
   win.loadFile("./view/index.html");
 }
 
+function setAutoLaunch(enable) {
+  app.setLoginItemSettings({
+    openAtLogin: enable ? false : true,
+    name: "TREM Lite",
+    args: ["--start"],
+  });
+}
+
 const shouldQuit = app.requestSingleInstanceLock();
 
 if (!shouldQuit) app.quit();
@@ -77,6 +100,8 @@ else {
     if (win != null) win.show();
   });
   app.whenReady().then(() => {
+    const autoLaunchEnabled = readConfig();
+    setAutoLaunch(autoLaunchEnabled);
     trayIcon();
     createWindow();
   });

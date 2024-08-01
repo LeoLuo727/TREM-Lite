@@ -540,13 +540,18 @@ async function getUserInfo(token, retryCount = 0) {
 function LoginSuccess(msg) {
   display([elements.LoginBtn]);
   display([elements.LogoutBtn], "flex");
-  elements.act.textContent = `Welcome,${msg ? "VIP" : "User"}`;
-  console.log(msg.permission);
+  const vip_text =
+    msg.permission.length > 1 && !msg.vip
+      ? "工作人員"
+      : msg.vip > 0
+      ? "VIP"
+      : "USER";
+  elements.act.textContent = `Welcome, ${vip_text}`;
   elements.vip_time.textContent =
-    msg.vip > 0
+    vip_text === "VIP"
       ? formatTime(msg.vip)
-      : msg.permission.length > 1
-      ? "高級VIP"
+      : vip_text === "工作人員"
+      ? "永久"
       : "";
   elements.LoginBack.dispatchEvent(clickEvent);
 }

@@ -1763,3 +1763,8 @@ body:has(#report-panel.show) .pga_dot {
   background-image: url("../resource/image/cross.png");
   background-size: cover;
 }
+
+.time-label {
+  color: #fff;
+  top: -10px;
+}

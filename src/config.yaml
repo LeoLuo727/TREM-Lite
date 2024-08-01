@@ -11,7 +11,7 @@ setting:
   bg-percentage: 100
   map-display-effect: 1
   station:
-    name: '6732340'
+    name: "6732340"
     net: SE-Net
     loc: 臺南市歸仁區
     code: 711
@@ -28,7 +28,7 @@ setting:
     show-window-detect: 1
     show-window-realtime-int: 1
     early-warning-TREM: 1
-    other-auto-start: 1
+    other-auto-launch: 1
     other-voice: 1
     graphics-block-auto-zoom: 1
     graphics-show-fault: 1

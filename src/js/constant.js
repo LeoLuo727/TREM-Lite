@@ -125,7 +125,7 @@ const constant = {
       "early-warning-SCDZJ": 1,
       "graphics-block-auto-zoom": 1,
       "graphics-show-fault": 1,
-      "other-auto-start": 1,
+      "other-auto-launch": 1,
       "other-voice": 1,
       "show-window-detect": 1,
       "show-window-eew": 1,
@@ -248,5 +248,7 @@ const variable = {
     show_int: null,
     icon: [],
     replay_status: 0,
+    circles: [],
+    labels: [],
   },
 };

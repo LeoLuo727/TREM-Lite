@@ -95,6 +95,8 @@ async function ntp() {
 }
 
 let rts_replay_time = 0;
+let rtsController = new AbortController();
+let eewController = new AbortController();
 
 const fetchWithFallback = async (
   url,
@@ -112,7 +114,7 @@ const fetchWithFallback = async (
     if (response.ok) return response.json();
 
     if (response.status == 404) {
-      const fallbackResponse = await fetch(fallbackUrl, options);
+      const fallbackResponse = await fetch(fallbackUrl, { ...options, signal });
       if (fallbackResponse.ok) return fallbackResponse.json();
       throw new Error(
         `Fallback request failed with status ${fallbackResponse.status}`
@@ -135,14 +137,19 @@ setInterval(() => {
     if (!rts_replay_time) return;
     rts_replay_time += 1000;
     const ts = Math.round(rts_replay_time / 1000) * 1000;
-    const controller = new AbortController();
-    const { signal } = controller;
-    setTimeout(() => controller.abort(), 2500);
+
+    // Cancel previous requests
+    rtsController.abort();
+    eewController.abort();
+
+    // Create new controllers for new requests
+    rtsController = new AbortController();
+    eewController = new AbortController();
 
     fetchWithFallback(
       `https://api-2.exptech.dev/api/v1/trem/rts/${ts}`,
       `https://api-1.exptech.dev/api/v1/trem/rts/${ts}`,
-      { signal }
+      { signal: rtsController.signal }
     ).then((ans) => {
       if (ans) variable.report.replay_data = ans;
     });
@@ -150,18 +157,20 @@ setInterval(() => {
     fetchWithFallback(
       `https://api-2.exptech.dev/api/v1/eq/eew/${ts}`,
       `https://api-1.exptech.dev/api/v1/eq/eew/${ts}`,
-      { signal }
+      { signal: eewController.signal }
     ).then((ans_eew) => {
       if (ans_eew) {
         variable.report.replay_data.eew = ans_eew;
       }
     });
+
     if (!variable.report.replay_data.box) return;
     const rp_data = variable.report.replay_data;
     const alert = Object.keys(rp_data.box).length;
     if (alert) show_rts_box(rp_data.box);
-    if (rp_data.eew) {
-      show_rts_dot(rp_data, alert);
+    show_rts_dot(rp_data, alert);
+
+    if (rp_data.eew && rp_data.eew.length > 0) {
       for (const eew of rp_data.eew) {
         eew.time = rp_data.time;
         eew.timestamp = now();

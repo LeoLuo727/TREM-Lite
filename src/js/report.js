@@ -225,17 +225,61 @@ function report_more(data, int) {
   });
   L.marker([lat, lon], { icon: epic_center }).addTo(variable.map);
   variable.map.setView([lat, lon], 9);
-
   variable.report.show_int = true;
-
   report_int(data);
   report_grouped(data);
   report_all(data);
 }
 
+const P_wave_speed = 7;
+const S_wave_speed = 4;
+const maxCircles = 15;
+const interval = 5000;
+
+function calculate_wave_radius(timeElapsed, depth, waveSpeed) {
+  return Math.sqrt((waveSpeed * timeElapsed) ** 2 - depth ** 2);
+}
+
+function create_circle(lat, lon, radius, label) {
+  const circle = L.circle([lat, lon], {
+    radius: radius * 1000,
+    color: "white",
+    fillColor: "transparent",
+    fillOpacity: 0,
+    weight: 1,
+  }).addTo(variable.map);
+
+  const labelMarker = L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: "time-label",
+      html: `<div>${label}</div>`,
+      iconSize: [40, 20],
+    }),
+  })
+    .setLatLng([lat + radius / 111, lon])
+    .addTo(variable.map);
+
+  variable.report.circles.push(circle, labelMarker);
+  return circle;
+}
+
+function initialize_circles(lat, lon, depth) {
+  const eventTime = Date.now();
+  for (let i = 0; i < maxCircles; i++) {
+    const accurateTime = eventTime + i * interval;
+    const timeElapsed = (accurateTime - eventTime) / 1000;
+
+    const pRadius = calculate_wave_radius(timeElapsed, depth, P_wave_speed);
+
+    if (pRadius > 0) {
+      const label = `${((i * interval) / 1000).toFixed(0)}秒`;
+      create_circle(lat, lon, pRadius, label);
+    }
+  }
+}
+
 function report_int(data) {
   if (!variable.map) {
-    console.error("Map is not initialized");
     return;
   }
   const regions = Object.keys(data.list);
@@ -257,6 +301,9 @@ function report_int(data) {
       variable.report.icon.push(marker);
     });
   });
+
+  console.log(data);
+  initialize_circles(data.lat, data.lon, data.depth);
 }
 
 function report_grouped(data) {
@@ -329,6 +376,7 @@ function report_all(data) {
 
 function show_rts_list() {
   variable.fault.bringToFront();
+  variable.time_cache_list = [];
   const _eew_list = Object.keys(variable.eew_list);
   const len = _eew_list.length;
   opacity([ReportListBtn], len || rts_replay_time > 0 ? 0 : 1);
@@ -355,6 +403,13 @@ function show_rts_list() {
           variable.map.removeLayer(marker);
         }
       });
+    }
+
+    if (variable.report.circles) {
+      variable.report.circles.forEach((circle) =>
+        variable.map.removeLayer(circle)
+      );
+      variable.report.circles = [];
     }
   } else {
     if (
@@ -453,6 +508,13 @@ ReportActionReplay.addEventListener("click", () => {
     variable.report.icon = [];
   }
 
+  if (variable.report.circles) {
+    variable.report.circles.forEach((circle) =>
+      variable.map.removeLayer(circle)
+    );
+    variable.report.circles = [];
+  }
+
   const EpicCenter = querySelectorAll(".epiccenter");
   EpicCenter.forEach((element) => element.remove());
   variable.map.setView([23.6, 120.4], 7.8);
@@ -481,7 +543,14 @@ ReportBackBtn.addEventListener("click", () => {
     variable.report.icon = [];
   }
 
-  const EpicCenter = querySelectorAll(".epiccenter");
+  if (variable.report.circles) {
+    variable.report.circles.forEach((circle) =>
+      variable.map.removeLayer(circle)
+    );
+    variable.report.circles = [];
+  }
+
+  const EpicCenter = document.querySelectorAll(".epiccenter");
   EpicCenter.forEach((element) => element.remove());
   variable.map.setView([23.6, 120.4], 7.8);
   variable.report.show_int = null;
