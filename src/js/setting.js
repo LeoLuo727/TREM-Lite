@@ -57,7 +57,6 @@ function ls_init() {
     }
 
     const userCheckbox = config.setting["user-checkbox"] || {};
-
     Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key) => {
       if (!(key in userCheckbox)) userCheckbox[key] = 1;
     });
@@ -113,8 +112,25 @@ document.onclick = (event) => {
 };
 
 // 確定重置按鈕點擊事件
-ResetSure.onclick = () => {
-  ls_init();
+ResetSure.onclick = async () => {
+  const { LOCALSTORAGE_DEF, CHECKBOX_DEF } = constant.SETTING;
+  const {
+    location: { lat, lon },
+  } = LOCALSTORAGE_DEF;
+
+  config.setting = {
+    ...config.setting,
+    ...LOCALSTORAGE_DEF,
+    "user-checkbox": { ...CHECKBOX_DEF },
+    station: await NearStation(lat, lon),
+  };
+
+  querySelectorAll(".switch input[type='checkbox']").forEach((checkbox) => {
+    checkbox.checked = config.setting["user-checkbox"][checkbox.id] === 1;
+  });
+
+  await WriteConfig(config);
+  RenderSelectedFromConfig();
   ResetConfirmWrapper.style.bottom = "-100%";
 };
 
@@ -410,6 +426,7 @@ function StationSelEvent(itemsContainer) {
       if (match) {
         const formattedText = `${net} ${details}`;
         StationSel.textContent = formattedText;
+        console.log(formattedText);
         querySelector(".current-station").textContent = formattedText;
         const stationData = ["net", "code", "name", "loc", "lat", "lon"].reduce(
           (acc, attr) => {
@@ -540,20 +557,18 @@ async function getUserInfo(token, retryCount = 0) {
 function LoginSuccess(msg) {
   display([elements.LoginBtn]);
   display([elements.LogoutBtn], "flex");
-  const vip_text =
-    msg.permission.length > 1 && !msg.vip
-      ? "工作人員"
-      : msg.vip > 0
-      ? "VIP"
-      : "USER";
-  elements.act.textContent = `Welcome, ${vip_text}`;
-  elements.vip_time.textContent =
-    vip_text === "VIP"
-      ? formatTime(msg.vip)
-      : vip_text === "工作人員"
-      ? "永久"
-      : "";
+  elements.act.textContent = msg.email;
+  const data = msg.permission;
+  elements.vip_time.textContent = msg.vip > 0 ? formatTime(msg.vip) : "";
   elements.LoginBack.dispatchEvent(clickEvent);
+
+  const TREM_EEW = querySelectorAll("#early-warning-TREM");
+  TREM_EEW.forEach((trem) => {
+    const div = trem.closest(".setting-option > div");
+    if (div) {
+      div.classList.toggle("block", data.includes("exptech.studio"));
+    }
+  });
 }
 
 function LogoutSuccess() {
@@ -594,7 +609,6 @@ function initializeSel(type, location, showInt, selectWrapper, items) {
   };
 }
 
-// Update local Config
 function updateConfig(typeClassName, selectedValue) {
   const key = typeClassName.includes("warning-realtime-station")
     ? "realtime-station"
@@ -676,8 +690,8 @@ const GetSelectedFromConfig = () => {
     city: location.city || "臺南市",
     town: location.town || "歸仁區",
     station: station,
-    wrts: warning["realtime-station"] || constant.SETTING.INTENSITY[0],
-    wei: warning["estimate-int"] || constant.SETTING.INTENSITY[0],
+    wrts: warning["realtime-station"] || "0級",
+    wei: warning["estimate-int"] || "0級",
     effect,
     selectedcheckbox,
   };
@@ -689,7 +703,7 @@ function RenderSelectedFromConfig() {
     GetSelectedFromConfig();
 
   const updateText = (selector, text) => {
-    document.querySelector(selector).textContent = text;
+    querySelector(selector).textContent = text;
   };
 
   updateText(".current-city", city);
@@ -708,7 +722,6 @@ function RenderSelectedFromConfig() {
     Object.keys(constant.SETTING.MAP_DISPLAY)[effect - 1] || "unknown";
   updateText(".current-effect", effect_text);
 
-  /** 選中check box **/
   const SelectedCheckBoxes = selectedcheckbox || {};
   document
     .querySelectorAll(".switch input[type='checkbox']")

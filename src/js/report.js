@@ -243,10 +243,10 @@ function calculate_wave_radius(timeElapsed, depth, waveSpeed) {
 function create_circle(lat, lon, radius, label) {
   const circle = L.circle([lat, lon], {
     radius: radius * 1000,
-    color: "white",
+    color: "#8E8E8E",
     fillColor: "transparent",
     fillOpacity: 0,
-    weight: 1,
+    weight: 1.5,
   }).addTo(variable.map);
 
   const labelMarker = L.marker([lat, lon], {
@@ -302,7 +302,6 @@ function report_int(data) {
     });
   });
 
-  console.log(data);
   initialize_circles(data.lat, data.lon, data.depth);
 }
 
