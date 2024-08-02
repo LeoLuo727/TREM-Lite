@@ -29,7 +29,6 @@ function get_station_info() {
 function show_rts_box(_colors) {
   const _colors_ = {};
   const _eew_list = Object.keys(variable.eew_list);
-  if (!_eew_list.length) return;
   variable.focus.bounds.rts = L.latLngBounds();
   Object.keys(_colors).forEach((key) => {
     let passed = false;

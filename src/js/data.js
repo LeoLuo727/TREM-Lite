@@ -68,6 +68,7 @@ async function realtime_rts() {
   if (variable.report.replay_status) return;
   const res = await fetchData(`${LB_url()}v1/trem/rts`);
   const data = await res.json();
+
   const alert = Object.keys(data.box).length;
   show_rts_dot(data, alert);
   if (alert) show_rts_box(data.box);
@@ -103,7 +104,8 @@ setInterval(() => {
     setTimeout(() => controller.abort(), 2500);
     const _replay_time = Math.round(rts_replay_time / 1000);
     rts_replay_time += 1000;
-    const ts = _replay_time * 1000
+    const ts = _replay_time * 1000;
+
     fetch(`https://api-2.exptech.com.tw/api/v1/trem/rts/${ts}`, { signal: controller.signal })
       .then(async (ans) => {
         ans = await ans.json();
