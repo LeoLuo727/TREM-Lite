@@ -8,7 +8,6 @@ const speech = new Speech.default();
   // speech.setLanguage("ja-JP");
   // speech.setVoice("Microsoft Sayaka - Japanese (Japan)");
   speech.setRate(1.5);
-  variable.speech_status = 1;
 })();
 
 const configFilePath = path.join(app.getPath("userData"), "config.yaml");
@@ -34,7 +33,7 @@ function WriteConfig(data) {
   } catch (e) {
     console.error("Error writing config:", e);
   }
-
+  variable.speech_status = data.setting["user-checkbox"]["other-voice"];
   ipcRenderer.send(
     "updateAutoLaunch",
     data.setting["user-checkbox"]["other-auto-launch"]

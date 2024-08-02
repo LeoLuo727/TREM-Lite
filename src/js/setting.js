@@ -33,9 +33,8 @@ system_cpu.textContent = `${os.cpus()[0].model}`;
 function ls_init() {
   return new Promise(async (resolve) => {
     await config_init();
-
     await realtimeStation();
-
+    variable.speech_status = config.setting["user-checkbox"]["other-voice"];
     Object.entries(constant.SETTING.LOCALSTORAGE_DEF).forEach(
       ([key, value]) => {
         if (!config.setting[key]) {
