@@ -106,7 +106,9 @@ setInterval(() => {
     rts_replay_time += 1000;
     const ts = _replay_time * 1000;
 
-    fetch(`https://api-2.exptech.com.tw/api/v1/trem/rts/${ts}`, { signal: controller.signal })
+    fetch(`https://api-2.exptech.com.tw/api/v1/trem/rts/${ts}`, {
+      signal: controller.signal,
+    })
       .then(async (ans) => {
         ans = await ans.json();
         if (!rts_replay_time) return;
@@ -120,18 +122,22 @@ setInterval(() => {
         $("#connect").style.color = "goldenrod";
       })
       .catch((err) => {
-        console.log(err,'replay_rts');
+        console.log(err, "replay_rts");
       });
 
-    fetch(`https://api-2.exptech.com.tw/api/v1/eq/eew/${ts}`, { signal: controller.signal })
+    fetch(`https://api-2.exptech.com.tw/api/v1/eq/eew/${ts}`, {
+      signal: controller.signal,
+    })
       .then(async (ans_eew) => {
         ans_eew = await ans_eew.json();
         if (!rts_replay_time) return;
         const _now = now();
         for (const eew of ans_eew) {
-          eew.time = eew.eq.time;
-          eew.timestamp = _now - (_replay_time * 1000 - eew.time);
-          show_eew(eew);
+          if (eew.author == "cwa" || eew.author == "trem") {
+            eew.time = eew.eq.time;
+            eew.timestamp = _now - (_replay_time * 1000 - eew.time);
+            show_eew(eew);
+          }
         }
       })
       .catch((err) => {
