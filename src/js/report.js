@@ -401,6 +401,7 @@ function show_rts_list() {
       variable.replay = 0;
       variable.report.replay_data = {};
     }
+    variable.report.replay_status = 0;
     opacity([InfoBodyTitleBox, InfoBodyFooter], 0);
     opacity(
       [InfoBox, ReportListWrapper],
@@ -502,6 +503,7 @@ ReportBackBtn.addEventListener("click", () => {
   opacity([ReportBoxWrapper], 0);
   setTimeout(() => display([ReportBoxWrapper], ""), 100);
   opacity([ReportListWrapper, InfoBox], 1);
+  variable.map.setView([23.6, 120.4], 7.8);
   clear_report_item();
 });
 
@@ -526,7 +528,6 @@ function clear_report_item() {
   variable.report.circles = [];
   variable.report.icon = [];
   variable.report.show_int = null;
-  variable.map.setView([23.6, 120.4], 7.8);
 }
 
 function stop_replay() {

@@ -55,7 +55,7 @@ function createWindow(value) {
   win = new BrowserWindow({
     title: `TREM Lite v${app.getVersion()}`,
     minWidth: 985,
-    minHeight: 895,
+    minHeight: 550,
     width: 1405,
     height: 895,
     fullscreenable: false,

@@ -95,88 +95,46 @@ async function ntp() {
 }
 
 let rts_replay_time = 0;
-let rtsController = new AbortController();
-let eewController = new AbortController();
-
-const fetchWithFallback = async (
-  url,
-  fallbackUrl,
-  options = {},
-  timeout = 5000
-) => {
-  const controller = new AbortController();
-  const signal = controller.signal;
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(url, { ...options, signal });
-    clearTimeout(timeoutId);
-    if (response.ok) return response.json();
-
-    if (response.status == 404) {
-      const fallbackResponse = await fetch(fallbackUrl, { ...options, signal });
-      if (fallbackResponse.ok) return fallbackResponse.json();
-      throw new Error(
-        `Fallback request failed with status ${fallbackResponse.status}`
-      );
-    }
-
-    throw new Error(`Request failed with status ${response.status}`);
-  } catch (error) {
-    if (error.name == "AbortError") {
-      console.error("Request timed out");
-    } else {
-      console.error(error);
-    }
-    return null;
-  }
-};
 
 setInterval(() => {
   try {
     if (!rts_replay_time) return;
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 2500);
+    const _replay_time = Math.round(rts_replay_time / 1000);
     rts_replay_time += 1000;
-    const ts = Math.round(rts_replay_time / 1000) * 1000;
+    const ts = _replay_time * 1000
+    fetch(`https://api-2.exptech.com.tw/api/v1/trem/rts/${ts}`, { signal: controller.signal })
+      .then(async (ans) => {
+        ans = await ans.json();
+        if (!rts_replay_time) return;
 
-    // Cancel previous requests
-    rtsController.abort();
-    eewController.abort();
+        const alert = Object.keys(ans.box).length;
+        show_rts_dot(ans, alert);
+        if (alert) show_rts_box(ans.box);
 
-    // Create new controllers for new requests
-    rtsController = new AbortController();
-    eewController = new AbortController();
+        variable.last_get_data_time = now();
+        variable.report.replay_data = ans;
+        $("#connect").style.color = "goldenrod";
+      })
+      .catch((err) => {
+        console.log(err,'replay_rts');
+      });
 
-    fetchWithFallback(
-      `https://api-2.exptech.dev/api/v1/trem/rts/${ts}`,
-      `https://api-1.exptech.dev/api/v1/trem/rts/${ts}`,
-      { signal: rtsController.signal }
-    ).then((ans) => {
-      if (ans) variable.report.replay_data = ans;
-    });
-
-    fetchWithFallback(
-      `https://api-2.exptech.dev/api/v1/eq/eew/${ts}`,
-      `https://api-1.exptech.dev/api/v1/eq/eew/${ts}`,
-      { signal: eewController.signal }
-    ).then((ans_eew) => {
-      if (ans_eew) {
-        variable.report.replay_data.eew = ans_eew;
-      }
-    });
-
-    if (!variable.report.replay_data.box) return;
-    const rp_data = variable.report.replay_data;
-    const alert = Object.keys(rp_data.box).length;
-    if (alert) show_rts_box(rp_data.box);
-    show_rts_dot(rp_data, alert);
-
-    if (rp_data.eew && rp_data.eew.length > 0) {
-      for (const eew of rp_data.eew) {
-        eew.time = rp_data.time;
-        eew.timestamp = now();
-        show_eew(eew);
-      }
-    }
+    fetch(`https://api-2.exptech.com.tw/api/v1/eq/eew/${ts}`, { signal: controller.signal })
+      .then(async (ans_eew) => {
+        ans_eew = await ans_eew.json();
+        if (!rts_replay_time) return;
+        const _now = now();
+        for (const eew of ans_eew) {
+          eew.time = eew.eq.time;
+          eew.timestamp = _now - (_replay_time * 1000 - eew.time);
+          show_eew(eew);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     console.log(err);
   }
