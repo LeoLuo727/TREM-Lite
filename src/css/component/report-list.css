@@ -5,21 +5,21 @@
   top: 9.5em;
   bottom: 0px;
   right: 8px;
-  margin-top: .5em;
+  margin-top: 0.5em;
   width: 375px;
   max-width: 340px;
   z-index: 1000;
   overflow: hidden;
   filter: none;
   transition-property: opacity, translate;
-  transition-duration: .2s;
+  transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0.3, 0, 0.8, 0.15);
 
   &:has(+ .report-box-wrapper > .report-box.show) {
     filter: brightness(60%);
     transition-timing-function: cubic-bezier(0.05, 0.7, 0.1, 1);
 
-    >.report-list-scrollview {
+    > .report-list-scrollview {
       pointer-events: none;
     }
   }
@@ -41,7 +41,7 @@
 
   /* animation */
   transition-property: opacity, translate;
-  transition-duration: .2s;
+  transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0.3, 0, 0.8, 0.15);
 
   &.show {
@@ -54,12 +54,12 @@
     padding-right: 0px;
   }
 
-  &:hover>.report-list-scroller {
+  &:hover > .report-list-scroller {
     overflow-y: auto;
     padding-right: 0px;
   }
 
-  >.report-list-scroller {
+  > .report-list-scroller {
     min-height: 0;
     overflow-y: hidden;
 
@@ -92,37 +92,35 @@
   margin: 1px;
   outline: transparent;
   box-shadow: transparent;
-  opacity: .85;
+  opacity: 0.85;
   cursor: pointer;
 
-  transition: background-color .1s ease-in-out,
-    opacity .1s ease-in-out,
-    outline .1s ease-in-out,
-    box-shadow .1s ease-in-out;
+  transition: background-color 0.1s ease-in-out, opacity 0.1s ease-in-out,
+    outline 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 
-  >.intensity-box {
+  > .intensity-box {
     height: 44px;
     font-size: 28px;
     line-height: 28px;
     font-weight: 700;
   }
 
-  >.report-list-item-content {
+  > .report-list-item-content {
     display: flex;
     flex-direction: column;
     flex: 1;
 
-    >.report-list-item-location {
+    > .report-list-item-location {
       font-weight: 500;
     }
 
-    >.report-list-item-time {
+    > .report-list-item-time {
       font-size: 75%;
       font-variant-numeric: tabular-nums;
     }
   }
 
-  >.report-list-item-magnitude {
+  > .report-list-item-magnitude {
     padding-right: 12px;
     font-size: 18px;
     font-variant-numeric: tabular-nums;
@@ -135,7 +133,7 @@
   }
 
   &.numbered {
-    >.report-list-item-magnitude {
+    > .report-list-item-magnitude {
       color: hsl(51deg 100% 60%);
     }
   }
@@ -151,7 +149,7 @@
   }
 }
 
-.report-list-item>.report-arrow-down {
+.report-list-item > .report-arrow-down {
   position: relative;
   right: 5px;
 }
@@ -170,7 +168,7 @@
 .report-location {
   font-size: 14px;
   font-weight: 600;
-  margin-left: .5em;
+  margin-left: 0.5em;
 }
 
 .report-int-item-info {
@@ -187,25 +185,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: .5em;
+  margin-left: 0.5em;
   background: #a1d8f51c;
   box-shadow: 1px 1px 1px #a1d8f51c, 0 3px 6px #a1d8f51c;
 }
 
-.my_location>.usr_location {
+.my_location > .usr_location {
   font-size: 16px;
   color: #a1d8f5;
 }
 
-
-.my_location>.location {
+.my_location > .location {
   font-size: 13px;
   margin-left: 0.1em;
   cursor: auto;
   color: #a1d8f5;
 }
-
-
 
 #report-intensity-grouped {
   gap: 2px !important;
@@ -237,8 +232,9 @@
   margin: 1px;
   outline: transparent;
   box-shadow: transparent;
-  opacity: .85;
-  transition: background-color .1s ease-in-out, opacity .1s ease-in-out, outline .1s ease-in-out, box-shadow .1s ease-in-out;
+  opacity: 0.85;
+  transition: background-color 0.1s ease-in-out, opacity 0.1s ease-in-out,
+    outline 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
   width: 90%;
   margin-bottom: 0.2em;
 }
@@ -246,7 +242,7 @@
 .report-int-item .town {
   font-size: 14px;
   font-weight: 600;
-  margin-left: .3em;
+  margin-left: 0.3em;
 }
 
 #report-back-btn {
@@ -263,7 +259,6 @@
 #report-back-btn .button-label {
   font-weight: bold;
 }
-
 
 .report-list-item-int {
   width: 65px;
@@ -294,7 +289,7 @@
 }
 
 .report-list-item-index {
-  margin-bottom: .3em;
+  margin-bottom: 0.3em;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -304,7 +299,8 @@
   font-size: 16px;
   outline: transparent;
   cursor: pointer;
-  transition: background-color .1s ease-in-out, opacity .1s ease-in-out, outline .1s ease-in-out, box-shadow .1s ease-in-out;
+  transition: background-color 0.1s ease-in-out, opacity 0.1s ease-in-out,
+    outline 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 }
 
 .report-list-item-mag {
@@ -328,7 +324,7 @@
 .report-list-item-int-title {
   font-size: 13px;
   font-weight: bold;
-  margin-top: .3em;
+  margin-top: 0.3em;
 }
 
 .report-list-item-int-wrapper {
@@ -458,7 +454,7 @@
     display: flex;
     align-items: baseline;
     width: 100%;
-    margin-top: .3em;
+    margin-top: 0.3em;
     justify-content: space-around;
   }
 }
@@ -476,12 +472,13 @@
   background: #464646;
   border-radius: 5px;
   position: relative;
-  top: .3em;
+  top: 0.3em;
   cursor: pointer;
   display: flex;
   align-items: center;
   color: #fff;
   justify-content: center;
+  opacity: 1;
 }
 
 .report-list-btn span {
@@ -504,14 +501,12 @@
 
 .hidden .report-list-btn-wrapper {
   width: 100px !important;
-  padding-right: .5em;
+  padding-right: 0.5em;
 }
 
 .report-list-item-mag-depth {
   margin-right: 0.5em;
 }
-
-
 
 .report-list-item-magnitude.normal {
   color: #fff;

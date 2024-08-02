@@ -178,6 +178,7 @@ body {
       display: flex;
       height: 72px;
       gap: 8px;
+      opacity: 0;
 
       > .info-body-title-title-box,
       > .info-body-title-body-box {
@@ -324,6 +325,7 @@ body {
       padding: 0 4px;
       line-height: 12px;
       font-size: 12px;
+      opacity: 0;
 
       > .info-body-footer-title {
         opacity: 0.75;
@@ -901,6 +903,8 @@ body:has(#report-panel.show) .pga_dot {
 #max-pga,
 #station-max-pga {
   margin-top: 5px;
+  border-radius: 5px;
+  padding: 2px;
 }
 
 .station-max-pga {
@@ -1700,6 +1704,7 @@ body:has(#report-panel.show) .pga_dot {
 }
 
 .app-version {
+  display: none;
   bottom: 4em;
   left: 55px;
   margin: 1px;

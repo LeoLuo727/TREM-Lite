@@ -98,6 +98,11 @@ function createWindow(value) {
     win.webContents.send("focus");
   });
 
+  win.on("resize", () => {
+    const [width, height] = win.getSize();
+    win.webContents.send("window-resized", { width, height });
+  });
+
   win.loadFile("./view/index.html");
 }
 
@@ -160,7 +165,7 @@ ipcMain.on("toggleFullscreen", () => {
 ipcMain.on("updateAutoLaunch", (_, value) => {
   updateAutoLaunchSetting(value);
   const config = yaml.load(fs.readFileSync(configFilePath, "utf8"));
-  if(config) {
+  if (config) {
     config.setting["user-checkbox"]["other-auto-launch"] = value;
     fs.writeFileSync(configFilePath, yaml.dump(config), "utf8");
   }

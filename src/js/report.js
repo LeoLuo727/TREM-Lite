@@ -43,7 +43,7 @@ async function report(t, retryCount = 0) {
   try {
     logger.info("[Fetch] Fetching report data...");
     const ReportList = $(".report-list-items");
-    const res = await fetchData(`${API_url()}v2/eq/report?limit=15`);
+    const res = await fetchData(`${API_url()}v2/eq/report?limit=20`);
     if (!res.ok) return;
     logger.info("[Fetch] Got report data");
     const data = await res.json();
