@@ -160,8 +160,10 @@ ipcMain.on("toggleFullscreen", () => {
 ipcMain.on("updateAutoLaunch", (_, value) => {
   updateAutoLaunchSetting(value);
   const config = yaml.load(fs.readFileSync(configFilePath, "utf8"));
-  config.setting["user-checkbox"]["other-auto-launch"] = value;
-  fs.writeFileSync(configFilePath, yaml.dump(config), "utf8");
+  if(config) {
+    config.setting["user-checkbox"]["other-auto-launch"] = value;
+    fs.writeFileSync(configFilePath, yaml.dump(config), "utf8");
+  }
 });
 
 function trayIcon() {
