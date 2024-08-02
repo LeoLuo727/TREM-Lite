@@ -11,9 +11,13 @@ const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
 
+/**
+ * @type {BrowserWindow}
+ */
 let win;
 let tray = null;
 const hide = process.argv.includes("--start") ? true : false;
+
 const test = process.argv.includes("--raw") ? 0 : 1;
 
 const configFilePath = path.join(app.getPath("userData"), "config.yaml");
@@ -39,14 +43,25 @@ function readConfig() {
   }
 }
 
-function createWindow() {
+function updateAutoLaunchSetting(value) {
+  app.setLoginItemSettings({
+    openAtLogin: value ? true : false,
+    name: "TREM Lite",
+    args: ["--start"],
+  });
+}
+
+function createWindow(value) {
   win = new BrowserWindow({
     title: `TREM Lite v${app.getVersion()}`,
-    minHeight: 540,
-    minWidth: 750,
-    width: 1280,
-    height: 720,
+    minWidth: 985,
+    minHeight: 895,
+    width: 1405,
+    height: 895,
+    fullscreenable: false,
+    maximizable: true,
     icon: "TREM.ico",
+    frame: true,
     webPreferences: {
       nodeIntegration: true,
       backgroundThrottling: false,
@@ -58,6 +73,8 @@ function createWindow() {
 
   require("@electron/remote/main").initialize();
   require("@electron/remote/main").enable(win.webContents);
+
+  updateAutoLaunchSetting(value);
 
   win.setMenu(null);
 
@@ -84,14 +101,6 @@ function createWindow() {
   win.loadFile("./view/index.html");
 }
 
-function setAutoLaunch(enable) {
-  app.setLoginItemSettings({
-    openAtLogin: enable ? false : true,
-    name: "TREM Lite",
-    args: ["--start"],
-  });
-}
-
 const shouldQuit = app.requestSingleInstanceLock();
 
 if (!shouldQuit) app.quit();
@@ -100,10 +109,9 @@ else {
     if (win != null) win.show();
   });
   app.whenReady().then(() => {
-    const autoLaunchEnabled = readConfig();
-    setAutoLaunch(autoLaunchEnabled);
     trayIcon();
-    createWindow();
+    const autoLaunchEnabled = readConfig();
+    createWindow(autoLaunchEnabled);
   });
 }
 
@@ -112,7 +120,7 @@ app.on("window-all-closed", (event) => {
 });
 
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length == 0) createWindow();
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
 app.on("browser-window-created", (e, window) => {
@@ -149,18 +157,12 @@ ipcMain.on("toggleFullscreen", () => {
   if (win) win.setFullScreen(!win.isFullScreen());
 });
 
-ipcMain.on("showMainWindow", () => {
-  showMainWindow();
+ipcMain.on("updateAutoLaunch", (_, value) => {
+  updateAutoLaunchSetting(value);
+  const config = yaml.load(fs.readFileSync(configFilePath, "utf8"));
+  config.setting["user-checkbox"]["other-auto-launch"] = value;
+  fs.writeFileSync(configFilePath, yaml.dump(config), "utf8");
 });
-
-function showMainWindow() {
-  if (win && !win.isDestroyed()) {
-    if (win.isMinimized()) win.restore();
-    if (!win.isVisible()) win.show();
-    win.setAlwaysOnTop(true);
-    win.focus();
-  }
-}
 
 function trayIcon() {
   if (tray) {

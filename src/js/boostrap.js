@@ -34,6 +34,11 @@ function WriteConfig(data) {
   } catch (e) {
     console.error("Error writing config:", e);
   }
+
+  ipcRenderer.send(
+    "updateAutoLaunch",
+    data.setting["user-checkbox"]["other-auto-launch"]
+  );
 }
 
 function config_init() {

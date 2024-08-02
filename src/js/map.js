@@ -212,7 +212,7 @@ function fault() {
     })
     .addTo(variable.map);
 
-  variable.fault.bringToFront();
+  if (variable.fault) variable.fault.bringToFront();
 }
 
 function usr_location() {

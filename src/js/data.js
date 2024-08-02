@@ -59,7 +59,7 @@ function read_replay_file() {
 
     variable.replay = data.rts.time;
     variable.report.replay_status = data.rts.time;
-    variable.report.replay_data = data.rts;
+    // variable.report.replay_data = data.rts;
     variable.last_get_data_time = now();
   }
 }

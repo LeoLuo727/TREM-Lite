@@ -65,4 +65,5 @@ function toHome(element) {
   ]);
   opacity([ReportListWrapper], 1);
   opacity([SettingWrapper, ReportBoxWrapper], 0);
+  clear_report_item();
 }

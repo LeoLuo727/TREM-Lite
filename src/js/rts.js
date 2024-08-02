@@ -88,7 +88,9 @@ function show_rts_box(_colors) {
 
 function show_rts_dot(data, alert) {
   if (!variable.station_info) return;
-  if (early(data)) return;
+  if (Object.keys(variable.report.replay_data).length == 0) {
+    if (early(data)) return;
+  }
 
   if (!alert) {
     variable.audio = {

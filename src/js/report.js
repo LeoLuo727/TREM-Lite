@@ -225,7 +225,6 @@ function report_more(data, int) {
   });
   L.marker([lat, lon], { icon: epic_center }).addTo(variable.map);
   variable.map.setView([lat, lon], 9);
-  variable.report.show_int = true;
   report_int(data);
   report_grouped(data);
   report_all(data);
@@ -302,6 +301,7 @@ function report_int(data) {
     });
   });
 
+  variable.report.show_int = 1;
   initialize_circles(data.lat, data.lon, data.depth);
 }
 
@@ -374,7 +374,7 @@ function report_all(data) {
 }
 
 function show_rts_list() {
-  variable.fault.bringToFront();
+  if (variable.fault) variable.fault.bringToFront();
   variable.time_cache_list = [];
   const _eew_list = Object.keys(variable.eew_list);
   const len = _eew_list.length;
@@ -391,25 +391,7 @@ function show_rts_list() {
     display([ReportBoxWrapper], "none");
     display([SettingWrapper], "none");
     ReportListWrapper.classList.add("hidden");
-
-    variable.report.show_int = null;
-    const epicenters = document.querySelectorAll(".epiccenter");
-    epicenters.forEach((epicenter) => epicenter.remove());
-
-    if (variable.report.icon) {
-      variable.report.icon.forEach((marker) => {
-        if (marker.options.icon.options.className.includes("report_dot")) {
-          variable.map.removeLayer(marker);
-        }
-      });
-    }
-
-    if (variable.report.circles) {
-      variable.report.circles.forEach((circle) =>
-        variable.map.removeLayer(circle)
-      );
-      variable.report.circles = [];
-    }
+    clear_report_item();
   } else {
     if (
       variable.report.replay_data &&
@@ -501,24 +483,8 @@ ReportActionReplay.addEventListener("click", () => {
   rts_replay_time = originTime.getTime();
   opacity([ReportBoxWrapper], 0);
   display([StopReplayWrapper], "flex");
-
-  if (variable.report.icon) {
-    variable.report.icon.forEach((marker) => variable.map.removeLayer(marker));
-    variable.report.icon = [];
-  }
-
-  if (variable.report.circles) {
-    variable.report.circles.forEach((circle) =>
-      variable.map.removeLayer(circle)
-    );
-    variable.report.circles = [];
-  }
-
-  const EpicCenter = querySelectorAll(".epiccenter");
-  EpicCenter.forEach((element) => element.remove());
-  variable.map.setView([23.6, 120.4], 7.8);
-  variable.report.show_int = null;
   variable.report.replay_status = 1;
+  clear_report_item();
 });
 
 // 報告頁面
@@ -536,28 +502,32 @@ ReportBackBtn.addEventListener("click", () => {
   opacity([ReportBoxWrapper], 0);
   setTimeout(() => display([ReportBoxWrapper], ""), 100);
   opacity([ReportListWrapper, InfoBox], 1);
+  clear_report_item();
+});
 
+StopReplayBtn.addEventListener("click", () => {
+  stop_replay();
+});
+
+function clear_report_item() {
   if (variable.report.icon) {
     variable.report.icon.forEach((marker) => variable.map.removeLayer(marker));
-    variable.report.icon = [];
   }
 
   if (variable.report.circles) {
     variable.report.circles.forEach((circle) =>
       variable.map.removeLayer(circle)
     );
-    variable.report.circles = [];
   }
 
   const EpicCenter = document.querySelectorAll(".epiccenter");
   EpicCenter.forEach((element) => element.remove());
-  variable.map.setView([23.6, 120.4], 7.8);
-  variable.report.show_int = null;
-});
 
-StopReplayBtn.addEventListener("click", () => {
-  stop_replay();
-});
+  variable.report.circles = [];
+  variable.report.icon = [];
+  variable.report.show_int = null;
+  variable.map.setView([23.6, 120.4], 7.8);
+}
 
 function stop_replay() {
   clearInterval(replay_timer);

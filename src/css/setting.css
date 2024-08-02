@@ -205,11 +205,15 @@ body {
 
 .setting-options-page {
   align-items: center;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 8px;
   min-height: 0;
   padding: 12px 12px 12px 12px;
+}
+
+.setting-options-page.active {
+  display: flex;
 }
 
 .setting-page-title {
@@ -225,14 +229,6 @@ body {
   background-color: rgb(59 59 59 / 35%);
   backdrop-filter: blur(20px);
   flex: 1;
-}
-
-.setting-options-page {
-  display: none;
-}
-
-.setting-options-page.active {
-  display: flex;
 }
 
 .setting-item-wrapper {

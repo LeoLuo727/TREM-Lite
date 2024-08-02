@@ -58,7 +58,6 @@ function ls_init() {
 
     const userCheckbox = config.setting["user-checkbox"] || {};
     Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key, value) => {
-      console.log(value);
       if (!(key in userCheckbox))
         userCheckbox[key] = constant.SETTING.CHECKBOX_DEF[key];
     });
@@ -128,10 +127,12 @@ ResetSure.onclick = async () => {
   };
 
   querySelectorAll(".switch input[type='checkbox']").forEach((checkbox) => {
-    checkbox.checked = config.setting["user-checkbox"][checkbox.id] === 1;
+    checkbox.checked = config.setting["user-checkbox"][checkbox.id] == 1;
   });
 
-  await WriteConfig(config);
+  WriteConfig(config);
+  fault();
+  usr_location();
   RenderSelectedFromConfig();
   ResetConfirmWrapper.style.bottom = "-100%";
 };
