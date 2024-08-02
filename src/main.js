@@ -25,7 +25,7 @@ const configFilePath = path.join(app.getPath("userData"), "config.yaml");
 const defaultConfig = {
   setting: {
     "user-checkbox": {
-      "other-auto-launch": true,
+      "other-auto-launch": 1,
     },
   },
 };
