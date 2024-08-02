@@ -485,6 +485,7 @@ ReportActionReplay.addEventListener("click", () => {
   opacity([ReportBoxWrapper], 0);
   display([StopReplayWrapper], "flex");
   variable.report.replay_status = 1;
+  variable.map.setView([23.6, 120.4], 7.8);
   clear_report_item();
 });
 
