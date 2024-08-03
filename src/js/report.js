@@ -68,8 +68,9 @@ async function report(t, retryCount = 0) {
     }
 
     const No = s ? "" : FirstItem.id.split("-");
-    const CheckNo = s ? "" : No[0].split(3)[1];
-    if (CheckNo == "000") variable.report.withoutNo = "Normal";
+    const CheckNo = s ? "" : No[0].substring(3, 6);
+    let isNumberFirst = "";
+    if (CheckNo == "000") isNumberFirst = "Normal";
 
     const IntWrapper = CreatEle("", "report-list-item-int-wrapper");
     const Int = CreatEle(
@@ -103,7 +104,7 @@ async function report(t, retryCount = 0) {
         "",
         "report-list-item-mag",
         "規模",
-        `<div class="report-list-item-magnitude ${variable.report.withoutNo}">${
+        `<div class="report-list-item-magnitude ${isNumberFirst}">${
           FirstItem.mag < 10 ? FirstItem.mag.toFixed(1) : FirstItem.mag
         }</div>`
       );
@@ -124,12 +125,12 @@ async function report(t, retryCount = 0) {
 
     // 非First
     for (let i = variable.report.check_; i < data.length; i++) {
-      variable.report.withoutNo = "";
+      let isNumber = "";
       const item = data[i];
       const No = item.id.split("-");
-      const CheckNo = No[0].split(3)[1];
+      const CheckNo = No[0].substring(3, 6);
 
-      if (CheckNo == "000") variable.report.withoutNo = "Normal";
+      if (CheckNo == "000") isNumber = "Normal";
 
       InfoWrapper = CreatEle("", "report-list-item-info-wrapper");
       MagDepthWrapper = CreatEle("", "report-list-item-mag-depth");
@@ -153,9 +154,9 @@ async function report(t, retryCount = 0) {
         "",
         "report-list-item-mag report-list-item-mag-depth",
         "規模",
-        `<div class="report-list-item-magnitude ${
-          variable.report.withoutNo
-        }">M ${item.mag < 10 ? item.mag.toFixed(1) : item.mag}</div>`
+        `<div class="report-list-item-magnitude ${isNumber}">M ${
+          item.mag < 10 ? item.mag.toFixed(1) : item.mag
+        }</div>`
       );
 
       InfoItem.appendChild(LocationItem);
@@ -403,8 +404,18 @@ function show_rts_list() {
     }
     variable.report.replay_status = 0;
     opacity([InfoBodyTitleBox, InfoBodyFooter], 0);
-    opacity([InfoBox],window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : 1);
-    opacity([ReportListWrapper],window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : (variable.rts > 0 ? 0 : 1));
+    opacity(
+      [InfoBox],
+      window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : 1
+    );
+    opacity(
+      [ReportListWrapper],
+      window.getComputedStyle(ReportBoxWrapper).display == "flex"
+        ? 0
+        : variable.rts > 0
+        ? 0
+        : 1
+    );
     variable.rts = 0;
     InfoBox.style.backgroundColor = "#505050c7";
     InfoTitleBoxType.textContent = "暫無生效中的地震預警";
