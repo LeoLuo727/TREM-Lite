@@ -232,7 +232,7 @@ function report_more(data, int) {
 
 const P_wave_speed = 7;
 const S_wave_speed = 4;
-const maxCircles = 15;
+const maxCircles = 31;
 const interval = 5000;
 
 function calculate_wave_radius(timeElapsed, depth, waveSpeed) {
@@ -268,7 +268,7 @@ function initialize_circles(lat, lon, depth) {
     const accurateTime = eventTime + i * interval;
     const timeElapsed = (accurateTime - eventTime) / 1000;
 
-    const pRadius = calculate_wave_radius(timeElapsed, depth, P_wave_speed);
+    const pRadius = calculate_wave_radius(timeElapsed, depth, S_wave_speed);
 
     if (pRadius > 0) {
       const label = `${((i * interval) / 1000).toFixed(0)}秒`;
