@@ -563,14 +563,6 @@ function LoginSuccess(msg) {
   const data = msg.permission;
   elements.vip_time.textContent = msg.vip > 0 ? formatTime(msg.vip) : "";
   elements.LoginBack.dispatchEvent(clickEvent);
-
-  const TREM_EEW = querySelectorAll("#early-warning-TREM");
-  TREM_EEW.forEach((trem) => {
-    const div = trem.closest(".setting-option > div");
-    if (div) {
-      div.classList.toggle("block", !data.includes("exptech.studio"));
-    }
-  });
 }
 
 function LogoutSuccess() {
@@ -579,14 +571,6 @@ function LogoutSuccess() {
   elements.act.textContent = "尚未登入";
   elements.vip_time.textContent = "";
   elements.LoginBtn.dispatchEvent(clickEvent);
-
-  const TREM_EEW = querySelectorAll("#early-warning-TREM");
-  TREM_EEW.forEach((trem) => {
-    const div = trem.closest(".setting-option > div");
-    if (div) {
-      div.classList.add("block");
-    }
-  });
 }
 
 const clickEvent = new MouseEvent("click", {
