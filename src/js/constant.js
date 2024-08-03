@@ -251,4 +251,5 @@ const variable = {
     circles: [],
     labels: [],
   },
+  rts:0,
 };

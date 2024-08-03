@@ -169,6 +169,7 @@ function show_rts_dot(data, alert) {
 
     const info = variable.station_info[id].info.at(-1);
     if (data.station[id].alert) {
+      variable.rts = data.station[id].alert ? 1 : 0;
       trigger++;
       level += pga;
     }

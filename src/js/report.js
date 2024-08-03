@@ -379,7 +379,7 @@ function show_rts_list() {
   const _eew_list = Object.keys(variable.eew_list);
   const len = _eew_list.length;
   opacity([ReportListBtn], len || rts_replay_time > 0 ? 0 : 1);
-  RTS_List.classList.toggle("hidden", len == 0);
+  RTS_List.classList.toggle("hidden", variable.rts == 0);
   if (len > 0 || rts_replay_time > 0) {
     const current_eew = variable.eew_list[_eew_list[last_map_count]]
       ? variable.eew_list[_eew_list[last_map_count]].data
@@ -403,10 +403,9 @@ function show_rts_list() {
     }
     variable.report.replay_status = 0;
     opacity([InfoBodyTitleBox, InfoBodyFooter], 0);
-    opacity(
-      [InfoBox, ReportListWrapper],
-      window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : 1
-    );
+    opacity([InfoBox],window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : 1);
+    opacity([ReportListWrapper],window.getComputedStyle(ReportBoxWrapper).display == "flex" ? 0 : (variable.rts > 0 ? 0 : 1));
+    variable.rts = 0;
     InfoBox.style.backgroundColor = "#505050c7";
     InfoTitleBoxType.textContent = "暫無生效中的地震預警";
     InfoNo.textContent = "";

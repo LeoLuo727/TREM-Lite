@@ -54,7 +54,7 @@ function updateAutoLaunchSetting(value) {
 function createWindow(value) {
   win = new BrowserWindow({
     title: `TREM Lite v${app.getVersion()}`,
-    minWidth: 985,
+    minWidth: 700,
     minHeight: 550,
     width: 1405,
     height: 895,
