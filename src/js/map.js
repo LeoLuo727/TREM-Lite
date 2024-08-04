@@ -240,11 +240,24 @@ function usr_location() {
   L.marker([location.lat, location.lon], { icon: usr_ico }).addTo(variable.map);
 }
 
-ipcRenderer.on("window-resized", (event, { width, height }) => {
+function resize() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  updateMapView(width, height);
+
+  ipcRenderer.on("window-resized", (event, { width, height }) => {
+    updateMapView(width, height);
+  });
+}
+
+function updateMapView(width, height) {
   const minZoom = 7;
   const maxZoom = 7.8;
   const zoom = Math.max(minZoom, Math.min(maxZoom, (width + height) / 350));
   const center = [23.6, 120.4];
+  
   variable.map.invalidateSize();
   variable.map.setView(center, zoom);
-});
+}
+
+resize();
