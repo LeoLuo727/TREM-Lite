@@ -133,7 +133,8 @@ setInterval(() => {
         if (!rts_replay_time) return;
         const _now = now();
         for (const eew of ans_eew) {
-          if (eew.author == "cwa" || eew.author == "trem") {
+          // 計算台灣跟震央的距離
+          if (distance(eew.eq.lat, eew.eq.lon)(23.6, 120.4) <= 800) {
             eew.time = eew.eq.time;
             eew.timestamp = _now - (_replay_time * 1000 - eew.time);
             show_eew(eew);

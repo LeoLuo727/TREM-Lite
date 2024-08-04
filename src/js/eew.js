@@ -219,9 +219,7 @@ setInterval(() => {
 // }, 5000);
 
 function show_eew(data) {
-  if (Object.keys(variable.report.replay_data).length == 0) {
-    if (early(data)) return;
-  }
+  if (early(data)) return;
   const id_str = `${data.id}-${data.serial}-${data.status == 3 ? 1 : 0}`;
   if (variable.time_cache_list.includes(id_str)) return;
   variable.time_cache_list.push(id_str);
