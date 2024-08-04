@@ -16,6 +16,7 @@ setInterval(() => {
       clearInterval(replay_timer);
       rts_replay_time = 0;
       variable.replay = 0;
+      variable.report.eew_end = 1;
       variable.report.replay_data = {};
       variable.report.replay_status = 0;
       variable.report.survey = null;
