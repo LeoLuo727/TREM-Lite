@@ -34,7 +34,8 @@ function ls_init() {
   return new Promise(async (resolve) => {
     await config_init();
     await realtimeStation();
-    variable.speech_status = config.setting["user-checkbox"]["other-voice"];
+    if (config && config.setting["user-checkbox"])
+      variable.speech_status = config.setting["user-checkbox"]["other-voice"];
     Object.entries(constant.SETTING.LOCALSTORAGE_DEF).forEach(
       ([key, value]) => {
         if (!config.setting[key]) {
@@ -57,8 +58,10 @@ function ls_init() {
 
     const userCheckbox = config.setting["user-checkbox"] || {};
     Object.keys(constant.SETTING.CHECKBOX_DEF).forEach((key, value) => {
-      if (!(key in userCheckbox))
+      if (!(key in userCheckbox)) {
+        console.log(constant.SETTING.CHECKBOX_DEF[key]);
         userCheckbox[key] = constant.SETTING.CHECKBOX_DEF[key];
+      }
     });
 
     config.setting["user-checkbox"] = userCheckbox;

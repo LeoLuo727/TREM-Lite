@@ -33,11 +33,13 @@ function WriteConfig(data) {
   } catch (e) {
     console.error("Error writing config:", e);
   }
-  variable.speech_status = data.setting["user-checkbox"]["other-voice"];
-  ipcRenderer.send(
-    "updateAutoLaunch",
-    data.setting["user-checkbox"]["other-auto-launch"]
-  );
+  if (data && data.setting["user-checkbox"]) {
+    variable.speech_status = data.setting["user-checkbox"]["other-voice"];
+    ipcRenderer.send(
+      "updateAutoLaunch",
+      data.setting["user-checkbox"]["other-auto-launch"]
+    );
+  }
 }
 
 function config_init() {
