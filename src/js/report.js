@@ -10,6 +10,7 @@ const ReportSubTitle = $("#report-subtitle");
 const ReportMaxIntensity = $("#report-max-intensity");
 const ReportActionReplay = $("#report-action-replay");
 const ReportActionOpen = $("#report-action-open");
+const ReportShowCircle = $("#report-show-circle");
 const ReportLocation = $("#report-location");
 const ReportLongitude = $("#report-longitude");
 const ReportLatitude = $("#report-latitude");
@@ -509,6 +510,19 @@ ReportActionOpen.addEventListener("click", () => {
     "openUrl",
     `https://www.cwa.gov.tw/V8/C/E/EQ/EQ${filtered}.html`
   );
+});
+
+let isVisible = true;
+
+ReportShowCircle.addEventListener("click", () => {
+  if (variable.report.circles) {
+    variable.report.circles.forEach((circle) =>
+      isVisible
+        ? variable.map.removeLayer(circle)
+        : variable.map.addLayer(circle)
+    );
+  }
+  isVisible = !isVisible;
 });
 
 // 地震報告詳細資訊返回

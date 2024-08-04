@@ -198,8 +198,10 @@ const { querySelector, querySelectorAll, createElement, getElementById } =
 function checkbox(type) {
   const config = ReadConfig() || { setting: {} };
   const box = config.setting["user-checkbox"];
-  const value = box[type];
-  return value;
+  if (box) {
+    const value = box[type];
+    return value;
+  }
 }
 
 function display(elements, type) {
