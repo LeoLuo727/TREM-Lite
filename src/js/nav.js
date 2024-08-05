@@ -15,6 +15,7 @@ Home_btn.addEventListener("click", (event) => {
     toHomeTimeout = null;
   }
   const closestDiv = event.target.closest(".nav-btn");
+  variable.map.setView([23.6, 120.4], 7.8);
   toHome(closestDiv);
 });
 
