@@ -570,6 +570,7 @@ function LoginSuccess(msg) {
   const data = msg.permission;
   elements.vip_time.textContent = msg.vip > 0 ? formatTime(msg.vip) : "";
   elements.LoginBack.dispatchEvent(clickEvent);
+  display([BuyVip], "none");
 }
 
 function LogoutSuccess() {
@@ -578,6 +579,7 @@ function LogoutSuccess() {
   elements.act.textContent = "尚未登入";
   elements.vip_time.textContent = "";
   elements.LoginBtn.dispatchEvent(clickEvent);
+  display([BuyVip], "block");
 }
 
 const clickEvent = new MouseEvent("click", {
