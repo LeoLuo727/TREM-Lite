@@ -16,12 +16,12 @@ setInterval(() => {
       clearInterval(replay_timer);
       rts_replay_time = 0;
       variable.replay = 0;
-      variable.report.eew_end = 1;
       variable.report.replay_data = {};
       variable.report.replay_status = 0;
       variable.report.survey = null;
       resize();
       display([StopReplayWrapper], "none");
+      ReportListWrapper.classList.remove("hidden");
 
       if (variable.eew_list[data.id].layer.s)
         variable.eew_list[data.id].layer.s.remove();

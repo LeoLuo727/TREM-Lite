@@ -249,7 +249,6 @@ const variable = {
     replay_status: 0,
     circles: [],
     labels: [],
-    eew_end: 0,
   },
   rts: 0,
 };

@@ -383,7 +383,6 @@ function show_rts_list() {
   opacity([ReportListBtn], len || rts_replay_time > 0 ? 0 : 1);
   RTS_List.classList.toggle("hidden", variable.rts == 0);
   if (len > 0 || rts_replay_time > 0) {
-    variable.report.eew_end = 0;
     const current_eew = variable.eew_list[_eew_list[last_map_count]]
       ? variable.eew_list[_eew_list[last_map_count]].data
       : "";
@@ -427,7 +426,6 @@ function show_rts_list() {
     InfoTime.textContent = "";
     InfoMag.textContent = "";
     InfoIntensity.textContent = "";
-    if (variable.report.eew_end) ReportListWrapper.classList.remove("hidden");
     const classList = InfoIntensity.classList;
     for (let i = classList.length - 1; i >= 0; i--)
       if (classList[i].startsWith("intensity-")) classList.remove(classList[i]);
@@ -563,7 +561,6 @@ function stop_replay() {
   variable.report.replay_data = {};
   rts_replay_time = 0;
   variable.replay = 0;
-  variable.report.eew_end = 1;
   variable.report.replay_status = 0;
   variable.report.survey = null;
   variable.focus.bounds.eew = L.latLngBounds();
@@ -582,4 +579,5 @@ function stop_replay() {
   realtime_list.innerHTML = "";
   resize();
   display([StopReplayWrapper], "none");
+  ReportListWrapper.classList.remove("hidden");
 }
