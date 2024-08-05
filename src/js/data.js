@@ -14,7 +14,7 @@ setInterval(() => {
 
 setInterval(() => {
   if (Object.keys(variable.eew_list).length !== 0) return;
-  if (variable.report.eew_end) report();
+  if (!variable.report.eew_end) report();
 }, 10_000);
 
 setInterval(() => {
