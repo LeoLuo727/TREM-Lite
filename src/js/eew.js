@@ -20,7 +20,7 @@ setInterval(() => {
       variable.report.replay_data = {};
       variable.report.replay_status = 0;
       variable.report.survey = null;
-      variable.map.setView([23.6, 120.4], 7.8);
+      resize();
       display([StopReplayWrapper], "none");
 
       if (variable.eew_list[data.id].layer.s)

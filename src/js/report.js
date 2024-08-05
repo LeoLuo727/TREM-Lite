@@ -498,7 +498,7 @@ ReportActionReplay.addEventListener("click", () => {
   opacity([ReportBoxWrapper], 0);
   display([StopReplayWrapper], "flex");
   variable.report.replay_status = 1;
-  variable.map.setView([23.6, 120.4], 7.8);
+  resize();
   clear_report_item();
 });
 
@@ -530,7 +530,7 @@ ReportBackBtn.addEventListener("click", () => {
   opacity([ReportBoxWrapper], 0);
   setTimeout(() => display([ReportBoxWrapper], ""), 100);
   opacity([ReportListWrapper, InfoBox], 1);
-  variable.map.setView([23.6, 120.4], 7.8);
+  resize();
   clear_report_item();
 });
 
@@ -580,6 +580,6 @@ function stop_replay() {
     delete variable.eew_list[key];
   });
   realtime_list.innerHTML = "";
-  variable.map.setView([23.6, 120.4], 7.8);
+  resize();
   display([StopReplayWrapper], "none");
 }

@@ -14,7 +14,7 @@ setInterval(() => {
 
 setInterval(() => {
   if (Object.keys(variable.eew_list).length !== 0) return;
-  if (!variable.report.eew_end) report();
+  if (variable.report.eew_end) report();
 }, 10_000);
 
 setInterval(() => {
@@ -36,27 +36,27 @@ function read_replay_file() {
 
   if (1 == 1) return;
 
-    const data = JSON.parse(
-      fs
-        .readFileSync(path.join(app.getPath("userData"), `replay/${name}`))
-        .toString()
-    );
+  const data = JSON.parse(
+    fs
+      .readFileSync(path.join(app.getPath("userData"), `replay/${name}`))
+      .toString()
+  );
 
-    const alert = Object.keys(data.rts.box).length;
-    data.rts.eew = data.eew;
-    show_rts_dot(data.rts, alert);
-    if (alert) show_rts_box(data.rts.box);
+  const alert = Object.keys(data.rts.box).length;
+  data.rts.eew = data.eew;
+  show_rts_dot(data.rts, alert);
+  if (alert) show_rts_box(data.rts.box);
 
-    for (const eew of data.eew) {
-      eew.time = data.rts.time;
-      eew.timestamp = now();
-      show_eew(eew);
-    }
+  for (const eew of data.eew) {
+    eew.time = data.rts.time;
+    eew.timestamp = now();
+    show_eew(eew);
+  }
 
-    for (const intensity of data.intensity) show_intensity(intensity);
-    variable.replay = data.rts.time;
-    variable.report.replay_status = data.rts.time;
-    variable.last_get_data_time = now();
+  for (const intensity of data.intensity) show_intensity(intensity);
+  variable.replay = data.rts.time;
+  variable.report.replay_status = data.rts.time;
+  variable.last_get_data_time = now();
 }
 
 async function realtime_rts() {
@@ -100,64 +100,62 @@ setInterval(async () => {
   const ts = _replay_time * 1000;
 
   try {
-      await replay_rts(ts, controller);
-      await replay_eew(ts, _replay_time, controller);
+    replay_rts(ts, controller);
+    replay_eew(ts, _replay_time, controller);
   } catch (error) {
-      console.error('Error during replay:', error);
+    console.error("Error during replay:", error);
   } finally {
-      clearTimeout(timeoutId);
+    clearTimeout(timeoutId);
   }
 }, 1000);
 
 async function fetchReplay(url, controller, retries = 3) {
   for (let i = 0; i < retries; i++) {
-      try {
-          const res = await fetch(url, { signal: controller.signal });
-          if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-          return await res.json();
-      } catch (error) {
-          if (i < retries - 1) {
-              console.warn(`Retrying... (${i + 1}/${retries})`);
-              continue;
-          } else {
-              throw error;
-          }
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      return await res.json();
+    } catch (error) {
+      if (i < retries - 1) {
+        console.warn(`Retrying... (${i + 1}/${retries})`);
+        continue;
+      } else {
+        throw error;
       }
+    }
   }
 }
 
 async function replay_rts(ts, controller) {
-  try {
-      const ans_rts = await fetchReplay(`https://api-2.exptech.com.tw/api/v1/trem/rts/${ts}`, controller);
-      if (!rts_replay_time) return;
+  const ans_rts = await fetchReplay(
+    `https://api-2.exptech.com.tw/api/v1/trem/rts/${ts}`,
+    controller
+  );
+  if (!rts_replay_time) return;
 
-      const alert = Object.keys(ans_rts.box).length;
-      show_rts_dot(ans_rts, alert);
-      if (alert) show_rts_box(ans_rts.box);
+  const alert = Object.keys(ans_rts.box).length;
+  show_rts_dot(ans_rts, alert);
+  if (alert) show_rts_box(ans_rts.box);
 
-      variable.last_get_data_time = now();
-      variable.report.replay_data = ans_rts;
-      $("#connect").style.color = "goldenrod";
-  } catch (error) {
-      console.error('Error fetching replay_rts:', error);
-  }
+  variable.last_get_data_time = now();
+  variable.report.replay_data = ans_rts;
+  $("#connect").style.color = "goldenrod";
 }
 
 async function replay_eew(ts, rt, controller) {
-  try {
-      const ans_eew = await fetchReplay(`https://api-2.exptech.com.tw/api/v1/eq/eew/${ts}`, controller);
-      if (!rts_replay_time) return;
+  const ans_eew = await fetchReplay(
+    `https://api-2.exptech.com.tw/api/v1/eq/eew/${ts}`,
+    controller
+  );
+  if (!rts_replay_time) return;
 
-      const _now = now();
-      for (const eew of ans_eew) {
-          if (distance(eew.eq.lat, eew.eq.lon)(23.6, 120.4) <= 800) {
-              eew.time = eew.eq.time;
-              eew.timestamp = _now - (rt * 1000 - eew.time);
-              show_eew(eew);
-          }
-      }
-  } catch (error) {
-      console.error('Error fetching replay_eew:', error);
+  const _now = now();
+  for (const eew of ans_eew) {
+    if (distance(eew.eq.lat, eew.eq.lon)(23.6, 120.4) <= 800) {
+      eew.time = eew.eq.time;
+      eew.timestamp = _now - (rt * 1000 - eew.time);
+      show_eew(eew);
+    }
   }
 }
 

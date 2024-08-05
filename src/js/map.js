@@ -124,7 +124,7 @@ setInterval(() => {
       !variable.focus.status.eew
     ) {
       map_focus = 0;
-      variable.map.setView([23.6, 120.4], 7.8);
+      resize();
       return;
     }
     if (variable.focus.status.intensity) {
@@ -254,8 +254,8 @@ function resize() {
 }
 
 function updateMapView(width, height) {
-  const minZoom = 7;
-  const maxZoom = 7.8;
+  const minZoom = 7.3;
+  const maxZoom = 9;
   const zoom = Math.max(minZoom, Math.min(maxZoom, (width + height) / 350));
   const center = [23.6, 120.4];
 
