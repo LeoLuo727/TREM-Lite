@@ -1,4 +1,6 @@
 const doc_time = $("#time");
+const configFilePath = path.join(app.getPath("userData"), "config.yaml");
+let config = {};
 
 const speech = new Speech.default();
 (async () => {
@@ -10,9 +12,7 @@ const speech = new Speech.default();
   speech.setRate(1.5);
 })();
 
-const configFilePath = path.join(app.getPath("userData"), "config.yaml");
 
-let config = {};
 
 function ReadConfig() {
   try {

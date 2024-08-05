@@ -539,6 +539,7 @@ StopReplayBtn.addEventListener("click", () => {
 });
 
 function clear_report_item() {
+  isVisible = true;
   if (variable.report.icon) {
     variable.report.icon.forEach((marker) => variable.map.removeLayer(marker));
   }
