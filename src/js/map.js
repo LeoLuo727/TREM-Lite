@@ -124,7 +124,7 @@ setInterval(() => {
       !variable.focus.status.eew
     ) {
       map_focus = 0;
-      resize();
+      variable.map.setView([23.6, 120.4], 7.8);
       return;
     }
     if (variable.focus.status.intensity) {
@@ -138,7 +138,7 @@ setInterval(() => {
         const center_now = variable.map.getCenter();
         const center = variable.focus.bounds.intensity.getCenter();
         let zoom =
-          variable.map.getBoundsZoom(variable.focus.bounds.intensity) - ㄅ;
+          variable.map.getBoundsZoom(variable.focus.bounds.intensity) - 0.4;
         if (Math.abs(zoom - zoom_now) < 0.2) zoom = zoom_now;
         const set_center = Math.sqrt(
           Math.pow((center.lat - center_now.lat) * 111, 2) +
@@ -147,8 +147,7 @@ setInterval(() => {
         if (checkbox("graphics-block-auto-zoom") != 1) {
           const now = Date.now();
           if (now - lastZoomUpdate >= 10000) {
-            resize();
-            // variable.map.setView(set_center > 10 ? center : center_now, zoom);
+            variable.map.setView(set_center > 10 ? center : center_now, zoom);
             lastZoomUpdate = now;
           }
         }
@@ -160,7 +159,7 @@ setInterval(() => {
         const zoom_now = variable.map.getZoom();
         const center_now = variable.map.getCenter();
         const center = variable.focus.bounds.rts.getCenter();
-        let zoom = variable.map.getBoundsZoom(variable.focus.bounds.rts) - 2;
+        let zoom = variable.map.getBoundsZoom(variable.focus.bounds.rts) - 0.7;
         if (Math.abs(zoom - zoom_now) < 0.2) zoom = zoom_now;
         const set_center = Math.sqrt(
           Math.pow((center.lat - center_now.lat) * 111, 2) +
@@ -169,8 +168,7 @@ setInterval(() => {
         if (checkbox("graphics-block-auto-zoom") != 1) {
           const now = Date.now();
           if (now - lastZoomUpdate >= 10000) {
-            resize();
-            // variable.map.setView(set_center > 10 ? center : center_now, zoom);
+            variable.map.setView(set_center > 10 ? center : center_now, zoom);
             lastZoomUpdate = now;
           }
         }
@@ -183,7 +181,7 @@ setInterval(() => {
         const zoom_now = variable.map.getZoom();
         const center_now = variable.map.getCenter();
         const center = variable.focus.bounds.eew.getCenter();
-        let zoom = variable.map.getBoundsZoom(variable.focus.bounds.eew) - 2;
+        let zoom = variable.map.getBoundsZoom(variable.focus.bounds.eew) - 0.7;
         if (Math.abs(zoom - zoom_now) < 0.2) zoom = zoom_now;
         if (zoom < 6.5) zoom = 6.5;
         const set_center = Math.sqrt(
@@ -193,8 +191,7 @@ setInterval(() => {
         if (checkbox("graphics-block-auto-zoom") != 1) {
           const now = Date.now();
           if (now - lastZoomUpdate >= 10000) {
-            resize();
-            // variable.map.setView(set_center > 10 ? center : center_now, zoom);
+            variable.map.setView(set_center > 10 ? center : center_now, zoom);
             lastZoomUpdate = now;
           }
         }
@@ -246,16 +243,17 @@ function usr_location() {
 function resize() {
   const width = window.innerWidth;
   const height = window.innerHeight;
+  console.log(Object.keys(variable.eew_list).length);
   updateMapView(width, height);
-
   ipcRenderer.on("window-resized", (event, { width, height }) => {
+    if (Object.keys(variable.eew_list).length !== 0) return;
     updateMapView(width, height);
   });
 }
 
 function updateMapView(width, height) {
-  const minZoom = 7.3;
-  const maxZoom = 9;
+  const minZoom = 7;
+  const maxZoom = 7.8;
   const zoom = Math.max(minZoom, Math.min(maxZoom, (width + height) / 350));
   const center = [23.6, 120.4];
 
