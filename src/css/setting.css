@@ -797,3 +797,8 @@ li {
   font-weight: 100;
   font-family: auto;
 }
+
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+}
