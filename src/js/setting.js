@@ -11,6 +11,7 @@ const ResetCancel = $(".reset-cancel");
 const ResetSure = $(".reset-sure");
 const LoginBtn = $(".login-btn");
 const Forget = $("#forget");
+const BuyVip = $(".buy-vip");
 
 const LocationWrapper = $(".usr-location");
 const Location = LocationWrapper.querySelector(".location");
@@ -538,6 +539,9 @@ elements.FormLogin.onclick = async () =>
   login(elements.FormEmail.value, elements.FormPassword.value);
 Forget.onclick = () =>
   ipcRenderer.send("openUrl", "https://exptech.com.tw/forgot");
+
+BuyVip.onclick = () =>
+  ipcRenderer.send("openUrl", "https://exptech.com.tw/pricing");
 
 async function getUserInfo(token, retryCount = 0) {
   try {

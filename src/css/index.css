@@ -1773,3 +1773,8 @@ body:has(#report-panel.show) .pga_dot {
   color: #fff;
   top: -10px;
 }
+
+.buy-vip {
+  color: #ffd63a;
+  cursor: pointer;
+}
