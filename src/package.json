@@ -16,7 +16,7 @@
     },
     "directories": {
       "buildResources": "resources",
-      "output": "dev"
+      "output": "../dev"
     },
     "mac": {
       "target": [
