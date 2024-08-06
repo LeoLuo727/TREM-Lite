@@ -322,8 +322,8 @@ function show_eew(data) {
             : L.gradientCircle([data.eq.lat, data.eq.lon], {
                 radius: s_dist,
                 gradientColors: data.status
-                  ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.6)"]
-                  : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.6)"],
+                  ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.1)"]
+                  : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.1)"],
                 pane: "circlePane",
               }).addTo(variable.map),
       },
@@ -372,8 +372,8 @@ function show_eew(data) {
           {
             radius: s_dist,
             gradientColors: data.status
-              ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.6)"]
-              : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.6)"],
+              ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.1)"]
+              : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.1)"],
             pane: "circlePane",
           }
         ).addTo(variable.map);
@@ -416,8 +416,8 @@ function show_eew(data) {
           {
             radius: s_dist,
             gradientColors: data.status
-              ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.6)"]
-              : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.6)"],
+              ? ["rgba(255, 0, 0, 0)", "rgba(255, 0, 0, 0.1)"]
+              : ["rgba(255, 146, 36, 0)", "rgba(255, 146, 36, 0.1)"],
             pane: "circlePane",
           }
         ).addTo(variable.map);
