@@ -21,7 +21,7 @@ jobs:
     - name: Restore dependencies
       run: npm i
     - name: Build
-      run: npm run dist
+      run: npm run build
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
     - name: Upload Artifact
@@ -44,7 +44,7 @@ jobs:
     - name: Restore dependencies
       run: npm i
     - name: Build
-      run: npm run dist
+      run: npm run build
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
     - name: Upload Artifact
@@ -67,7 +67,7 @@ jobs:
     - name: Restore dependencies
       run: npm i
     - name: Build
-      run: npm run dist
+      run: npm run build
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
     - name: Upload Artifact
