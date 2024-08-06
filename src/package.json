@@ -28,7 +28,14 @@
         "deb"
       ],
       "category": "Development"
+    },
+    "publish": {
+      "provider": "github"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ExpTechTW/TREM-Lite.git"
   },
   "devDependencies": {
     "electron": "^27.0.0",
