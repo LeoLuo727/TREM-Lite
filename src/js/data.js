@@ -13,7 +13,6 @@ setInterval(() => {
 }, 1_000);
 
 setInterval(() => {
-  if (Object.keys(variable.eew_list).length !== 0) return;
   report();
 }, 10_000);
 
