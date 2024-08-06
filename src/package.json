@@ -15,7 +15,8 @@
       "icon": "TREM.ico"
     },
     "directories": {
-      "output": "../dev"
+      "buildResources": "resources",
+      "output": "dev"
     },
     "mac": {
       "target": [
