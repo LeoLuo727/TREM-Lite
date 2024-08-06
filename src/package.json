@@ -3,7 +3,7 @@
   "version": "2.0.0-pre.17",
   "description": "Taiwan Real-time Earthquake Monitoring",
   "main": "main.js",
-  "author": "whes1015",
+  "author": "ExpTechTW <ExpTech.tw@gmail.com>",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
