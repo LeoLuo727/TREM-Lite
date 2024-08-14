@@ -1,0 +1,77 @@
+name: TREM-Lite
+
+on:
+  push:
+    branches: [ "Release" ]
+  pull_request:
+    branches: [ "Release" ]
+
+jobs:
+  Windows_x64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: src
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Restore dependencies
+      run: npm i
+    - name: Build
+      run: npm run dist
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: "TREM-Lite.Windows_x64.exe"
+        path: D:/a/TREM-Lite/TREM-Lite/dev/*.exe
+
+  Linux_amd64:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Restore dependencies
+      run: npm i
+    - name: Build
+      run: npm run dist
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: "TREM-Lite.Linux_amd64.deb"
+        path: /home/runner/work/TREM-Lite/TREM-Lite/dev/*.deb
+
+  macOS_x64:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: src
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Restore dependencies
+      run: npm i
+    - name: Build
+      run: npm run dist
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: "TREM-Lite.macOS_x64.dmg"
+        path: /Users/runner/work/TREM-Lite/TREM-Lite/dev/*.dmg
